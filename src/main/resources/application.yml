@@ -1,2 +1,49 @@
 server:
-  port: 8089
+  port: 8081
+spring:
+  datasource:
+    initialization-mode: never
+    type: com.alibaba.druid.pool.DruidDataSource
+    druidProperties:
+      username: root
+      password: 123456
+      url: jdbc:mysql://localhost:3306/honeytask?characterEncoding=utf8&useSSL=true&serverTimezone=GMT%2B8&zeroDateTimeBehavior=convertToNull
+      name: druid
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: true
+      testOnReturn: false
+      filters: stat,wall,slf4j
+      logSlowSql: true
+      poolPreparedStatements: true
+      maxOpenPreparedStatements: 20
+  jpa:
+    show-sql: true
+    database: MYSQL
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+  messages:
+    basename: exception/exception
+    use-code-as-default-message: true
+
+
+  mail:
+    username: 1041765757@qq.com                # 用来验证授权的邮件用户名
+    password: gotartrfwuytbcji                # 根据QQ邮箱设置-账户里生成的第三方登陆授权码，可用来代替密码登陆
+    host: smtp.qq.com                         # 邮件服务器类型
+    properties.mail.smtp.ssl.enable: true # 用以支持授权码登陆
+
+
+custom:  # 自定义的属性最好都写在custom前缀下，方便辨认
+  login-interceptor:
+    ignoreFile: /druid,/user/login,/user/registry,/user/validateEmail,/user/users   # 不需要校验登录的请求
