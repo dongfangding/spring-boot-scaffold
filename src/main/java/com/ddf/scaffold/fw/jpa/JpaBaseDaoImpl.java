@@ -276,8 +276,8 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
      * @return
      */
     private Page<T> responsePage(@NotNull Query query, @NotNull List<QueryParam> queryParams, @NotNull Pageable pageable) {
-        query.setFirstResult((pageable.getPageNumber() - 1) * pageable.getPageSize())
-                .setMaxResults((pageable.getPageNumber() - 1) * pageable.getPageSize() + pageable.getPageSize() - 1);
+        query.setFirstResult((pageable.getPageNumber()) * pageable.getPageSize())
+                .setMaxResults((pageable.getPageNumber()) * pageable.getPageSize() + pageable.getPageSize() - 1);
         List<T> result = query.getResultList();
         if (result == null) {
             result = new ArrayList<>();
@@ -535,7 +535,17 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
                             queryParam.setValue(new Date((Long) queryParam.getValue()));
                         }
                     }
-                    query.setParameter(queryParam.getKey() + "_" + queryParam.getValue().hashCode(), queryParam.getValue());
+                    boolean isLike = false;
+                    if (QueryParam.Op.LIKE.equals(queryParam.getOp())) {
+                        if (!queryParam.getValue().toString().contains("%")) {
+                            isLike = true;
+                        }
+                    }
+                    if (isLike) {
+                        query.setParameter(queryParam.getKey() + "_" + queryParam.getValue().hashCode(), "%" + queryParam.getValue() + "%");
+                    } else {
+                        query.setParameter(queryParam.getKey() + "_" + queryParam.getValue().hashCode(), queryParam.getValue());
+                    }
                 }
             });
         }

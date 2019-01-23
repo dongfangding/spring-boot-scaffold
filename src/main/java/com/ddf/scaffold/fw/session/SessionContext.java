@@ -20,14 +20,14 @@ public class SessionContext<T extends BaseDomain> extends HashMap implements Ser
 	private static final long serialVersionUID = 3370995848343546285L;
 
 	/**
-	 * 用户唯一键（用户名/邮箱，按自己需要来）,登录后必须设置，后面框架中会用到
+	 * 用户唯一键（用户名/邮箱，按自己需要来）,登录后必须由编码者赋值，后面框架中会用到
 	 */
 	@Getter
 	@Setter
 	@NotNull private String uid;
 
 	/**
-	 * 用户信息对象
+	 * 用户信息对象,登录后编码者将用户信息设置设置到该属性中
 	 */
 	@Getter
 	@Setter

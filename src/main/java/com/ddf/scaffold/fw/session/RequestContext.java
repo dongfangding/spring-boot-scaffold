@@ -27,8 +27,4 @@ public class RequestContext implements Serializable {
 	@Getter
 	@Setter
 	private Collection<MultipartFile> fileItems;
-
-	@Getter
-	@Setter
-	private List data = new ArrayList();
 }

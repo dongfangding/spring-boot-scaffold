@@ -11,7 +11,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "USER")
-@ToString(callSuper = false)
+@ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)

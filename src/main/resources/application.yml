@@ -43,6 +43,16 @@ spring:
     host: smtp.qq.com                         # 邮件服务器类型
     properties.mail.smtp.ssl.enable: true # 用以支持授权码登陆
 
+  redis:
+    host: 192.168.1.6 # redis主机
+    database: 0 # 默认操作哪个数据库
+    port: 6379 # 端口号
+    jedis:
+     pool:
+       max-active: 50
+       min-idle: 1
+       max-idle: 20
+
 
 custom:  # 自定义的属性最好都写在custom前缀下，方便辨认
   login-interceptor:

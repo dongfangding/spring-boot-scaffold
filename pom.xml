@@ -105,7 +105,20 @@
             <artifactId>druid</artifactId>
             <version>${durid-version}</version>
         </dependency>
+
         <!-- =========================================数据源连接================================================ -->
+
+
+        <!-- 引入对缓存的支持 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <!-- 引入Redis的支持 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
 
     </dependencies>
 
@@ -118,16 +131,6 @@
             </resource>
         </resources>
         <plugins>
-            <!-- 该插件的意思是能够使用$符号来获取各个模块位于src/main/resources里的资源文件的属性 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <delimiters>
-                        <delimit>$</delimit>
-                    </delimiters>
-                </configuration>
-            </plugin>
             <!-- 打包插件 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>

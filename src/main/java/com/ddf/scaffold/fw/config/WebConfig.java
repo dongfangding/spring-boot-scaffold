@@ -7,10 +7,13 @@ import com.ddf.scaffold.fw.resolver.QueryParamArgumentResolver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.data.web.config.SpringDataWebConfiguration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
@@ -31,9 +34,9 @@ import java.util.concurrent.ThreadFactory;
  * @author DDf on 2018/12/8
  * 框架核心配置类
  *
- * 主要这里一定要实现WebMvcConfigurer，该接口已经提供了默认实现，而且@EnableSpringDataWebSupport
- * 提供的SpringDataWebConfiguration就是实现了该接口来添加相对应的参数解析器和消息转换器，如果这里处置不当，
- * 会覆盖该注解提供的功能，如PageableHandlerMethodArgumentResolver
+ * 主要这里一定要实现{@link WebMvcConfigurer}，该接口已经提供了默认实现，而且{@link @EnableSpringDataWebSupport}
+ * 提供的{@link SpringDataWebConfiguration}就是实现了该接口来添加相对应的参数解析器和消息转换器，如果这里处置不当，
+ * 会覆盖该注解提供的功能，如{@link PageableHandlerMethodArgumentResolver}
  *
  */
 @Configuration
@@ -47,6 +50,7 @@ import java.util.concurrent.ThreadFactory;
 @EnableScheduling
 @ComponentScan("com.ddf.scaffold")
 @EntityScan("com.ddf.scaffold.fw.entity")
+@EnableCaching
 public class WebConfig implements WebMvcConfigurer {
 	@Autowired
 	private RequestContextInterceptor requestContextInterceptor;

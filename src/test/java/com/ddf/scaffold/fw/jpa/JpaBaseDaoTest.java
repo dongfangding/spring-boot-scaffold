@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import javax.management.Query;
 import javax.transaction.Transactional;
 import java.util.*;
 
@@ -25,6 +26,7 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
 	/**
 	 * 单表根据Id查询
+	 * from User where id = ? and removed = 0
 	 */
 	@Test
 	public void testFindById() {
@@ -34,6 +36,7 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
 	/**
 	 * 单表根据id删除
+	 * update user set removed = 1, version = version + 1, modify_by = ?, modify_time = ? where id = ?
 	 */
 	@Test
 	public void testDeleteById() {
@@ -42,6 +45,7 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
 	/**
 	 * 单表直接删除一个对象
+	 * update user set removed = 1, version = version + 1, modify_by = ?, modify_time = ? where id = ?
 	 */
 	@Test
 	public void testDelete() {
@@ -50,18 +54,10 @@ public class JpaBaseDaoTest extends ApplicationTest {
 	}
 
 	/**
-	 * 单表根据一组id查询数据，暂未封装加上removed = 0条件
-	 */
-	@Test
-	public void testFindAllById() {
-		List<User> allById = userRepository.findAllById(Arrays.asList(1L, 2L, 3L));
-		if (allById != null && !allById.isEmpty()) {
-			System.out.println(allById);
-		}
-	}
-
-	/**
 	 * 单表根据简单的匹配条件返回一条数据，value值必须与在实体里对应属性的类型相同,条件字段必须在实体类中存在，否则会抛出异常
+	 *
+	 * from User where removed = 0 and id = ? and userName = ?
+	 *
 	 */
 	@Test
 	public void testFindOneByProperties() {
@@ -80,6 +76,7 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
 	/**
 	 * 单表根据简单的匹配条件返回结果集，value值必须与在实体里对应属性的类型相同,条件字段必须在实体类中存在，否则会抛出异常
+	 * from User where removed = 0 and createBy = ?
 	 */
 	@Test
 	public void findByProperties() {
@@ -96,13 +93,15 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
 	/**
 	 * 单表复杂查询条件返回结果集，value值必须与在实体里对应属性的类型相同,条件字段必须在实体类中存在，否则会抛出异常
+	 * from User where removed = 0 and userName = 'ddf' and id > 0 and (createBy like '%d%') and removed <> 100 or version is not null
+	 * and (createTime < ? or createTime < ?) and (userName = 'ddd' or removed >= 0 )
 	 */
 	@Test
 	public void testFindByQueryParams() {
 		List<QueryParam> queryParams = new ArrayList<>();
 		queryParams.add(new QueryParam<>("userName", "ddf"));
 		queryParams.add(new QueryParam<>("id", QueryParam.Op.GT, 0L));
-		queryParams.add(new QueryParam<>("createBy", QueryParam.Op.LIKE, "d"));
+		queryParams.add(new QueryParam<>("createBy", QueryParam.Op.LIKE, "%d%"));
 		queryParams.add(new QueryParam<>("createTime", QueryParam.Op.LT,  new Date(), QueryParam.Relative.OR, "createTime"));
 		queryParams.add(new QueryParam<>("createTime", QueryParam.Op.LT,  new Date().getTime() + 3000000, QueryParam.Relative.OR, "createTime"));
 		queryParams.add(new QueryParam<>("removed", QueryParam.Op.NE, 100));
@@ -117,6 +116,9 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
 	/**
 	 * 单表根据复杂条件更新部分字段值，version为可选项，在某些场景确定需要的情况下最好传入
+	 * update user set version=version+1, modify_by=?, modify_time=?, removed=?
+	 *     where removed=0 and user_name=? and id>? and ( create_by like ? ) and create_time > ?
+	 *     and removed<> ? or version is not null
 	 */
 	@Test
 	public void testUpdateByMap() {
@@ -153,11 +155,20 @@ public class JpaBaseDaoTest extends ApplicationTest {
 	public void testPageByProperties() {
 		Map<String, Object> propertiesMap = new HashMap<>();
 		propertiesMap.put("createBy", "ddf");
+
+		/**
+		 * Pageable 该项目已开启了Web增强模块，controller层直接使用Pageable入参即可接收分页和排序参数，具体、
+		 * 可传参数请参考https://docs.spring.io/spring-data/jpa/docs/2.0.10.RELEASE/reference/html/#core.web
+		 */
+
 		Pageable pageable = PageRequest.of(1, 2);
 		Page<User> users = userRepository.pageByProperties(propertiesMap, pageable);
 		System.out.println(users);
 
-
+		/**
+		 * from User where removed=0 and version>=?
+		 *     order by createBy ASC, createTime DESC limit ?
+		 */
 		List<QueryParam> queryParams = new ArrayList<>();
 		queryParams.add(new QueryParam("version", QueryParam.Op.GE, 0));
 
@@ -188,5 +199,16 @@ public class JpaBaseDaoTest extends ApplicationTest {
 		Long countId = userRepository.querySize(propertiesMap, "id");
 		System.out.println(countId);
 
+	}
+
+
+	@Test
+	public void test() {
+		List<QueryParam> queryParams = new ArrayList<>();
+		queryParams.add(new QueryParam<>("userName", QueryParam.Op.LIKE, "%dd", QueryParam.Relative.AND, "group1"));
+		queryParams.add(new QueryParam<>("version", QueryParam.Op.LE, 10, QueryParam.Relative.OR, "group1"));
+		queryParams.add(new QueryParam<>("createTime", QueryParam.Op.GT,  new Date(), QueryParam.Relative.OR, "createTime"));
+		queryParams.add(new QueryParam<>("createTime", QueryParam.Op.LT,  new Date().getTime() + 3000000, QueryParam.Relative.OR, "createTime"));
+		userRepository.findByQueryParams(queryParams);
 	}
 }

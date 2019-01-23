@@ -11,7 +11,7 @@ import java.util.Optional;
 
 /**
  *
- * 获得实体类保存的审计信息，针对{@code @CreatedBy}和{@code @LastModifiedDate}来捕捉用户信息
+ * 获得实体类保存的审计信息，针对{@code @CreatedBy}和{@code @LastModifiedBy}来捕捉用户信息
  *
  * @see BaseDomain#getCreateBy()
  * @see BaseDomain#getModifyBy()
