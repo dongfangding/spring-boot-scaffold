@@ -34,11 +34,18 @@ public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S>
     void setRequestContext(ThreadLocal<RequestContext> requestContext);
 
     /**
-     * 设置SessionContext 的值，因为{@link JpaBaseDaoImpl}非容器管理类，获取不了，只能提供方法通过反射设置
-     * @param sessionContext
+     * 获得RequestContext的值，必须调用{@link JpaBaseDao#setRequestContext(ThreadLocal)}，才会有值，用于使用完毕后释放对象
+     * @see JpaBaseDaoAspect
+     * @return
+     */
+    ThreadLocal<SessionContext> getSessionContext();
+
+    /**
+     * 设置RequestContext 的值，因为{@link JpaBaseDaoImpl}非容器管理类，获取不了，只能提供方法通过反射设置
+     * @param requestContext
      * @see JpaBaseDaoAspect
      */
-    void setSessionContext(ThreadLocal<SessionContext> sessionContext);
+    void setSessionContext(ThreadLocal<SessionContext> requestContext);
 
     /**
      * 获得RequestContext的值，必须调用{@link JpaBaseDao#setRequestContext(ThreadLocal)}，才会有值，用于使用完毕后释放对象
@@ -46,13 +53,6 @@ public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S>
      * @return
      */
     ThreadLocal<RequestContext> getRequestContext();
-
-    /**
-     * 获得SessionContext的值，必须调用{@link JpaBaseDao#setSessionContext(ThreadLocal)}，才会有值，用于使用完毕后释放对象
-     * @see JpaBaseDaoAspect
-     * @return
-     */
-    ThreadLocal<SessionContext> getSessionContext();
 
     /**
      * 根据条件更新个别字段的值
@@ -114,7 +114,7 @@ public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S>
      * @param pageable    分页对象
      * @return
      */
-    Page<T> pageByQueryParams(@NotNull List<QueryParam> queryParams, @NotNull Pageable pageable);
+    Page<T> pageByQueryParams(List<QueryParam> queryParams, @NotNull Pageable pageable);
 
 
     /**
@@ -166,6 +166,15 @@ public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S>
 
 
     /**
+     * 复杂条件查询返回结果总条数
+     *
+     * @param queryParams 查询条件对象
+     * @return
+     */
+    Long querySize(@NotNull List<QueryParam> queryParams);
+
+
+    /**
      * 简单条件查询返回结果总条数
      *
      * @param propertiesMap 查询条件对象
@@ -173,4 +182,49 @@ public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S>
      * @return
      */
     Long querySize(@NotNull Map<String, Object> propertiesMap, String countField);
+
+    /**
+     * 简单条件查询返回结果总条数
+     *
+     * @param propertiesMap 查询条件对象
+     * @return
+     */
+    Long querySize(@NotNull Map<String, Object> propertiesMap);
+
+
+    /**
+     * 根据主键集合删除多条数据,影响函数为0时抛出异常
+     * @param iterable
+     */
+    void deleteByIds(@NotNull Iterable<S> iterable);
+
+    /**
+     * TODO
+     * 将RequestContext里的参数符合匹配实体字段的用作查询条件，不用再麻烦的用Map接收再查询
+     * @return
+     */
+    List<T> findByRequestContext();
+
+    /**
+     * TODO
+     * 将RequestContext里的参数符合匹配实体字段的用作查询条件，不用再麻烦的用Map接收再查询
+     * @return
+     */
+    T findOneByRequestContext();
+
+
+    /**
+     * 根据检查相等查询条件删除数据，影响函数为0不报错
+     * @param properties
+     * @return
+     */
+    Integer deleteByProperties(Map<String, Object> properties);
+
+
+    /**
+     * 根据复杂条件删除数据，，影响函数为0不报错
+     * @param queryParams
+     * @return
+     */
+    Integer deleteByQueryParams(List<QueryParam> queryParams);
 }

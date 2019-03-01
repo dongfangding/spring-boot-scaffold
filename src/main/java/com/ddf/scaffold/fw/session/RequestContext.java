@@ -7,10 +7,7 @@ import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -18,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 @RequestScope
-public class RequestContext implements Serializable {
+public class RequestContext extends HashMap<String, Object>  implements Serializable {
 	private static final long serialVersionUID = 611927845534787914L;
 
 	@Getter
