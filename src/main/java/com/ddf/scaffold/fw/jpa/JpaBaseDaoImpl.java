@@ -146,14 +146,7 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
     @Override
     @Transactional
     public void deleteById(@NotNull S id) {
-        Assert.notNull(id, ID_MUST_NOT_BE_NULL);
-        String uid = getUid();
-        int num = entityManager.createQuery("update " + entityName + " t set t.removed = 1, t.version = t.version + 1, " +
-                "t.modifyBy = :modifyBy, t.modifyTime = :modifyTime where t.uuid = :uuid").setParameter("uuid", id)
-                .setParameter("modifyBy", uid).setParameter("modifyTime", new Date(), TemporalType.TIMESTAMP).executeUpdate();
-        if (num == 0) {
-            throw new GlobalCustomizeException(GlobalExceptionEnum.UPDATE_ERROR, num);
-        }
+        deleteById(id,true);
     }
 
 
@@ -400,6 +393,11 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
      */
     @Override
     public void deleteByIds(@NotNull Iterable<S> iterable) {
+        deleteByIds(iterable, true);
+    }
+
+    @Override
+    public void deleteByIds(@NotNull Iterable<S> iterable, boolean throwable) {
         if (iterable == null) {
             throw new IllegalArgumentException("iterable must not be null!");
         }
@@ -407,7 +405,24 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
         int num = entityManager.createQuery("update " + entityName + " t set t.removed = 1, t.version = t.version + 1, " +
                 "t.modifyBy = :modifyBy, t.modifyTime = :modifyTime where t.uuid in (:uuid)").setParameter("uuid", iterable)
                 .setParameter("modifyBy", uid).setParameter("modifyTime", new Date(), TemporalType.TIMESTAMP).executeUpdate();
-        if (num == 0) {
+        if (throwable && num == 0) {
+            throw new GlobalCustomizeException(GlobalExceptionEnum.UPDATE_ERROR, num);
+        }
+    }
+
+    /**
+     * 根据主键删除，根据throwable判断是否抛出异常
+     * @param id 主键
+     * @param throwable 当为true时抛出异常
+     */
+    @Override
+    public void deleteById(@NotNull S id, boolean throwable) {
+        Assert.notNull(id, ID_MUST_NOT_BE_NULL);
+        String uid = getUid();
+        int num = entityManager.createQuery("update " + entityName + " t set t.removed = 1, t.version = t.version + 1, " +
+                "t.modifyBy = :modifyBy, t.modifyTime = :modifyTime where t.uuid = :uuid").setParameter("uuid", id)
+                .setParameter("modifyBy", uid).setParameter("modifyTime", new Date(), TemporalType.TIMESTAMP).executeUpdate();
+        if (num == 0 && throwable) {
             throw new GlobalCustomizeException(GlobalExceptionEnum.UPDATE_ERROR, num);
         }
     }
@@ -668,7 +683,9 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
 
 
                 if (String.class.getName().equals(field.getType().getName()) && QueryParam.Op.IN.equals(op)) {
-                    queryParam.setValue(Arrays.asList(String.valueOf(queryParam.getValue()).split(",")));
+                    if (!(queryParam.getValue() instanceof List)) {
+                        queryParam.setValue(Arrays.asList(String.valueOf(queryParam.getValue()).split(",")));
+                    }
                 }
                 // 处理Date类型的处理,value支持Date对象和Long类型的时间毫秒值
                 else if (field.getType().isAssignableFrom(Date.class)) {
@@ -870,6 +887,11 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
         return findById(id).isPresent();
     }
 
+    /**
+     * 实体类主键
+     * @param entity
+     * @return
+     */
     private S getId(@NotNull T entity) {
         return (S) entity.getId();
     }

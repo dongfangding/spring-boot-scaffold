@@ -199,6 +199,20 @@ public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S>
     void deleteByIds(@NotNull Iterable<S> iterable);
 
     /**
+     * 根据主键集合删除多条数据
+     * @param iterable
+     * @param throwable 影响行数为0时是否抛出异常
+     */
+    void deleteByIds(@NotNull Iterable<S> iterable, boolean throwable);
+
+    /**
+     * 根据主键删除，根据throwable判断是否抛出异常
+     * @param id 主键
+     * @param throwable 当为true时抛出异常
+     */
+    void deleteById(@NotNull S id, boolean throwable);
+
+    /**
      * TODO
      * 将RequestContext里的参数符合匹配实体字段的用作查询条件，不用再麻烦的用Map接收再查询
      * @return
