@@ -241,4 +241,21 @@ public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S>
      * @return
      */
     Integer deleteByQueryParams(List<QueryParam> queryParams);
+
+    /**
+     * 根据主键判断一个对象是否是新增对象，满足以下任意条件即视为新增对象
+     * 1. 主键为空
+     * 2. 主键不为空且在数据库中不存在
+     * @param entity
+     * @return
+     */
+    boolean isNew(T entity);
+
+
+    /**
+     * 或得实体类主键的值
+     * @param entity
+     * @return
+     */
+    S getId(@NotNull T entity);
 }

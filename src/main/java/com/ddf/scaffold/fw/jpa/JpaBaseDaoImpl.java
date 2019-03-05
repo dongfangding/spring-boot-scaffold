@@ -467,6 +467,11 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
         return 0;
     }
 
+    @Override
+    public boolean isNew(T entity) {
+        return getId(entity) == null || !existsById(getId(entity));
+    }
+
     private String commonHead(boolean isRemoved) {
         String headSql = "FROM " + entityName + " ";
         if (isRemoved) {
@@ -888,11 +893,12 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
     }
 
     /**
-     * 实体类主键
+     * 或得实体类主键的值
      * @param entity
      * @return
      */
-    private S getId(@NotNull T entity) {
+    @Override
+    public S getId(@NotNull T entity) {
         return (S) entity.getId();
     }
 }
