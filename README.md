@@ -212,7 +212,7 @@ public class WebConfig implements WebMvcConfigurer {}
 | @Setter |  lombok注解，对实体属性生成setter方法 |
 
 ```java
-package com.ddf.scaffold.entity;
+package com.ddf.scaffold.logic.entity;
 
 import com.ddf.scaffold.fw.entity.BaseDomain;
 import lombok.*;
@@ -277,9 +277,9 @@ public class WebConfig implements WebMvcConfigurer {}
 #### 3.2 基本使用
 编码者必须通过接口来声明`Repository`并继承自定义超类`com.ddf.scaffold.fw.jpa.JpaBaseDao`，这样自定义超类才能获取当前`Repository`操作的实体信息等，即可使用自定义实现的查询功能，同时`SpringDataJap`提供的功能依然可以正常使用,以下提供一个默认的参考
 ```java
-package com.ddf.scaffold.repository;
+package com.ddf.scaffold.logic.repository;
 
-import com.ddf.scaffold.entity.User;
+import com.ddf.scaffold.logic.entity.User;
 import com.ddf.scaffold.fw.jpa.JpaBaseDao;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -331,7 +331,7 @@ package com.ddf.scaffold.fw.jpa;
 import com.ddf.scaffold.fw.entity.BaseDomain;
 import com.ddf.scaffold.fw.session.RequestContext;
 import com.ddf.scaffold.fw.session.SessionContext;
-import com.ddf.scaffold.fw.util.QueryParam;
+import com.ddf.scaffold.fw.entity.QueryParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -695,9 +695,9 @@ public void test() {
 }
 ```
 #### 3.3 前端传参自定义查询实现
-`com.ddf.scaffold.fw.util.QueryParam`不仅支持后端开发人员对查询条件进行自定义，该脚手架工程也通过`com.ddf.scaffold.fw.resolver.QueryParamArgumentResolver`一个自定义参数解析器来将特定参数名的值解析成后端可以使用的`List<QueryParam>`对象，然后入参到`Controller`中，将值传入到查询方法中，即可作为一个通用的可由前端人员自定义改变查询条件，而不需要再额外的后端代码支持；
+`com.ddf.scaffold.fw.entity.QueryParam`不仅支持后端开发人员对查询条件进行自定义，该脚手架工程也通过`com.ddf.scaffold.fw.resolver.QueryParamArgumentResolver`一个自定义参数解析器来将特定参数名的值解析成后端可以使用的`List<QueryParam>`对象，然后入参到`Controller`中，将值传入到查询方法中，即可作为一个通用的可由前端人员自定义改变查询条件，而不需要再额外的后端代码支持；
 ** 传参方法 **
-前端传入必须使用`JSON`格式的数组对象，每个对象从内容应当遵循`com.ddf.scaffold.fw.util.QueryParam`类的属性，如果某个属性不需要，可以不传；格式拼接好之后必须使用`queryParams`参数传递；
+前端传入必须使用`JSON`格式的数组对象，每个对象从内容应当遵循`com.ddf.scaffold.fw.entity.QueryParam`类的属性，如果某个属性不需要，可以不传；格式拼接好之后必须使用`queryParams`参数传递；
 如
 ```
 queryParams=[{"key": "version", "op": "GE", "value": 0}]
@@ -741,9 +741,9 @@ queryParams=[{"key": "version", "op": "GE", "value": 0}]
 package com.ddf.scaffold.fw.jpa;
 
 import com.ddf.scaffold.ApplicationTest;
-import com.ddf.scaffold.entity.User;
-import com.ddf.scaffold.fw.util.QueryParam;
-import com.ddf.scaffold.repository.UserRepository;
+import com.ddf.scaffold.logic.entity.User;
+import com.ddf.scaffold.fw.entity.QueryParam;
+import com.ddf.scaffold.logic.repository.UserRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

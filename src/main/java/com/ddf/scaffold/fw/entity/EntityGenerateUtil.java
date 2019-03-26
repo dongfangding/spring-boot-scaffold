@@ -1,8 +1,12 @@
 package com.ddf.scaffold.fw.entity;
 
+
+import com.ddf.scaffold.fw.util.ConstUtil;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -75,11 +79,19 @@ public class EntityGenerateUtil {
         Scanner scanner = new Scanner(System.in);
         System.out.println("请输入要表名: ");
         String tableName = scanner.nextLine();
+        while (ConstUtil.isNull(tableName)) {
+            System.out.println("输入表名不能为空,请重新输入！");
+            tableName = scanner.nextLine();
+        }
         ResultSet columns = metaData.getColumns(CATLOG, "%", tableName, "%");
         String columnName, fieldType, remarks, fieldName;
         int columnType;
         System.out.println("请输入包名");
         String packageName = scanner.nextLine();
+        while (ConstUtil.isNull(packageName)) {
+            System.out.println("输入包名不能为空,请重新输入！");
+            packageName = scanner.nextLine();
+        }
         String className = lineToHump(tableName.substring(tableName.indexOf("_")));
         StringBuffer sbl = initClass(packageName, tableName, className);
         boolean isDateImport = false;
@@ -112,7 +124,7 @@ public class EntityGenerateUtil {
         new File(SOURCE_ROOT + File.separator + packageDir).mkdirs();
         File file = new File(SOURCE_ROOT + File.separator + packageDir + File.separator + className + ".java");
         file.createNewFile();
-        try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8")) {
+        try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             String sourceStr = sbl.toString();
             if (isDateImport) {
                 sourceStr = String.format(sourceStr, "import java.util.Date;" + LINE);
@@ -125,8 +137,8 @@ public class EntityGenerateUtil {
 
     /**
      * 将数据库类型转换为实体类型，可能会有遗漏，这里只转换了大部分，如不合适需要自己修改
-     * @param type SQL TYPE
-     * @param columnName 列名
+     * @param type
+     * @param columnName
      * @return
      */
     private static String castSqlType(int type, String columnName) {
@@ -141,6 +153,8 @@ public class EntityGenerateUtil {
             return " String ";
         } else if (Types.DATE == type || Types.TIME == type || Types.TIMESTAMP == type) {
             return " Date ";
+        } else if (Types.BIGINT == type) {
+            return " Long ";
         }
         throw new RuntimeException("暂未支持的数据类型" + type + " | " + columnName);
     }
@@ -167,7 +181,7 @@ public class EntityGenerateUtil {
      * @param className 类名
      * @return
      */
-    private static StringBuffer initClass(String packageName, String tableName, String className) {
+    public static StringBuffer initClass(String packageName, String tableName, String className) {
         StringBuffer sbl = new StringBuffer(200);
         sbl.append("package ").append(packageName).append(";").append(TWO_LINE);
         sbl.append("import com.hitisoft.hidoc.fw.entity.BaseDomain;").append(LINE);
@@ -192,7 +206,7 @@ public class EntityGenerateUtil {
 
     /**
      * 将输入的包名转换为文件路径
-     * @param packageName 包名
+     * @param packageName
      * @return
      */
     private static String packageNameToFileDir(String packageName) {

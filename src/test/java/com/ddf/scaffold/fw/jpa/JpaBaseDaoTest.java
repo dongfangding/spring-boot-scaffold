@@ -1,9 +1,9 @@
 package com.ddf.scaffold.fw.jpa;
 
 import com.ddf.scaffold.ApplicationTest;
-import com.ddf.scaffold.entity.User;
-import com.ddf.scaffold.fw.util.QueryParam;
-import com.ddf.scaffold.repository.UserRepository;
+import com.ddf.scaffold.logic.entity.User;
+import com.ddf.scaffold.fw.entity.QueryParam;
+import com.ddf.scaffold.logic.repository.UserRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import javax.management.Query;
 import javax.transaction.Transactional;
 import java.util.*;
 

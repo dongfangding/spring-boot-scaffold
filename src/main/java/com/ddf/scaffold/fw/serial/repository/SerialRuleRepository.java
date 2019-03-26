@@ -1,4 +1,4 @@
-package com.ddf.scaffold.fw.repository;
+package com.ddf.scaffold.fw.serial.repository;
 
 import com.ddf.scaffold.fw.entity.PSerialRule;
 import com.ddf.scaffold.fw.jpa.JpaBaseDao;

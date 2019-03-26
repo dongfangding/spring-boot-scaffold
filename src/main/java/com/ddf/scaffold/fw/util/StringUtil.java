@@ -12,6 +12,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringUtil {
 	private static final Logger logger = LoggerFactory
@@ -164,5 +166,31 @@ public class StringUtil {
 			e.printStackTrace();
 		}
 		return retString;
+	}
+
+
+	/**
+	 * 判断是否是英文字母，不区分大小写
+	 */
+	public static boolean isEn(String str) {
+		String regex = "^[a-zA-Z]+$";
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(str);
+		return matcher.matches();
+	}
+
+	/**
+	 * 切割箱型尺寸，前两位为尺寸，后两位为箱型
+	 * @param containerType
+	 * @return
+	 */
+	public static String[] splitContainerType(String containerType) {
+		if (isBlank(containerType) || containerType.length() != 4) {
+			return null;
+		}
+		String[] arr = new String[2];
+		arr[0] = containerType.substring(0, 2);
+		arr[1] = containerType.substring(2, 4);
+		return arr;
 	}
 }

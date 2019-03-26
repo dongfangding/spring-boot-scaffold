@@ -52,9 +52,6 @@ public class BaseDomain {
 
     @Column(name = "VERSION")
     @Version
-    protected Integer version = 0;
-
-    @Transient
-    protected String compCode;
+    protected Integer version;
 
 }

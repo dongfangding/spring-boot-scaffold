@@ -8,12 +8,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +32,14 @@ public class AccessLogAspect {
     @Autowired
     private LogAspectConfiguration logAspectConfiguration;
 
+    @Autowired(required = false)
+    private SlowEventAction slowEventAction;
+
+    @Autowired
+    private ThreadPoolTaskExecutor taskExecutor;
+
+    private ThreadLocal<Long> beforeTime = new ThreadLocal<>();
+
     @Pointcut(value = "execution(public * com..controller..*(..))")
     public void pointCut() {}
 
@@ -45,6 +49,7 @@ public class AccessLogAspect {
      */
     @Before("pointCut()")
     public void before(JoinPoint joinPoint) {
+        beforeTime.set(System.currentTimeMillis());
         logBefore(joinPoint);
     }
 
@@ -55,8 +60,50 @@ public class AccessLogAspect {
      */
     @AfterReturning(pointcut = "pointCut()", returning = "result")
     public void afterReturning(JoinPoint joinPoint, Object result) {
-        logAfter(joinPoint, result, "方法执行结束，成功返回值");
+        if (!logAspectConfiguration.isEnableLogAspect()) {
+            return;
+        }
+        String className = joinPoint.getSignature().getDeclaringType().getName();
+        String methodName = joinPoint.getSignature().getName();
+        long consumerTime = System.currentTimeMillis() - beforeTime.get();
+        logger.info("[{}.{}]{}..........: ({})", className, methodName, "方法执行结束，成功返回值,共耗时(" + consumerTime + "ms)", result != null ? result.toString() : "");
+        beforeTime.remove();
+        dealSlowTimeHandler(className, methodName, consumerTime);
     }
+
+    /**
+     * 如果接口耗时超过预设值，提供一个异步回调接口给使用者实现处理逻辑
+     * @param className
+     * @param methodName
+     * @param consumerTime
+     */
+    private void  dealSlowTimeHandler(String className, String methodName, long consumerTime) {
+        long slowTime = logAspectConfiguration.getSlowTime();
+        if (consumerTime > slowTime && slowEventAction != null && !checkIgnore(className)) {
+            // 需要使用方自己去实现doAction接口接收参数自定义自己的处理机制
+            SlowEventAction.SlowEvent slowEvent = new SlowEventAction.SlowEvent(className, methodName, consumerTime, slowTime);
+            logger.info("{}-{}耗时{}，准备执行处理回调。。。。", className, methodName, consumerTime);
+            taskExecutor.execute(() -> slowEventAction.doAction(slowEvent));
+        }
+    }
+
+    /**
+     * 判断是否忽略处理当前类
+     * @param className
+     * @return
+     */
+    private boolean checkIgnore(String className) {
+        String[] ignore = logAspectConfiguration.getIgnore();
+        if (ignore != null && ignore.length > 0) {
+            for (String aClass : ignore) {
+                if (aClass.equals(className) || className.startsWith(aClass)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     /**
      * 请求出现异常打印日志
@@ -65,7 +112,13 @@ public class AccessLogAspect {
      */
     @AfterThrowing(pointcut = "pointCut()", throwing = "exception")
     public void afterThrowing(JoinPoint joinPoint, Exception exception) {
-        logAfter(joinPoint, exception, "方法执行出现异常");
+        if (!logAspectConfiguration.isEnableLogAspect()) {
+            return;
+        }
+        String className = joinPoint.getSignature().getDeclaringType().getName();
+        String methodName = joinPoint.getSignature().getName();
+        logger.info("[{}.{}]{}..........: ({})", className, methodName, "方法执行出现异常",
+                exception.toString()  == null ? "" : exception.toString());
     }
 
 
@@ -97,25 +150,5 @@ public class AccessLogAspect {
         logger.info("[{}.{}方法执行，参数列表===>({})]", className, methodName, str);
     }
 
-    private void logAfter(JoinPoint joinPoint, Object result, String message) {
-        if (!logAspectConfiguration.isEnableLogAspect()) {
-            return;
-        }
-        String className = joinPoint.getSignature().getDeclaringType().getName();
-        String methodName = joinPoint.getSignature().getName();
-        logger.info("[{}.{}]{}..........: ({})", className, methodName, message, result != null ? result.toString() : "");
-
-
-        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (requestAttributes != null) {
-            HttpServletResponse response = requestAttributes.getResponse();
-            response.setStatus(200);
-            try {
-                response.getWriter().write("sssssssssssssssss");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
 }

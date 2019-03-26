@@ -1,7 +1,7 @@
 package com.ddf.scaffold.fw.resolver;
 
 import com.ddf.scaffold.fw.util.ContextKey;
-import com.ddf.scaffold.fw.util.QueryParam;
+import com.ddf.scaffold.fw.entity.QueryParam;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

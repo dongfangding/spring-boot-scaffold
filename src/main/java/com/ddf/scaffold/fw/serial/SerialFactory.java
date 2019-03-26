@@ -1,10 +1,13 @@
-package com.ddf.scaffold.fw.util;
+package com.ddf.scaffold.fw.serial;
 
 import com.ddf.scaffold.fw.entity.PSerialRule;
-import com.ddf.scaffold.fw.repository.SerialNoRepository;
-import com.ddf.scaffold.fw.repository.SerialRuleRepository;
-import com.ddf.scaffold.fw.session.SessionContext;
-import lombok.Setter;
+import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
+import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
+import com.ddf.scaffold.fw.security.UserToken;
+import com.ddf.scaffold.fw.serial.repository.SerialNoRepository;
+import com.ddf.scaffold.fw.serial.repository.SerialRuleRepository;
+import com.ddf.scaffold.fw.util.GlobalConfig;
+import com.ddf.scaffold.fw.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
- * @author DDf on 2019/1/18
+ *
  */
 @Component
 public class SerialFactory {
@@ -48,11 +48,20 @@ public class SerialFactory {
     @Autowired
     private SerialRuleRepository serialRuleRepository;
     @Autowired
-    @Setter
-    private SessionContext sessionContext;
+    private GlobalConfig globalConfig;
 
-    public String getSerial(String code, Map<String, String> paramMap, Date serialDate) {
-        return getSerial(code, paramMap, serialDate, null);
+    /**
+     * 获得平台标准的流水号规则，不再根据传参或者当前用户所在规则查找流水号规则
+     * @param code
+     * @return
+     */
+    public String getPlatformSerial(String code) {
+        return getSerial(code, null, null, true);
+    }
+
+
+    public String getSerial(String code) {
+        return getSerial(code, null, null, false);
     }
 
     /**
@@ -74,23 +83,25 @@ public class SerialFactory {
      * @return
      */
     public String getSerial(
-            String code, Map<String, String> paramMap, Date serialDate, ThreadLocal<SessionContext> sessionContextThreadLocal) {
-
-        if (sessionContextThreadLocal != null) {
-            this.sessionContext = sessionContextThreadLocal.get();
-        }
+            String code, Map<String, String> paramMap, Date serialDate, boolean isPlatform) {
         if (paramMap == null) {
             paramMap = new HashMap<>();
         }
         // get all parameter
-        // buildParamMap(paramMap);
+        buildParamMap(paramMap, isPlatform);
         Map<String, Object> propertiesMap = new HashMap<>();
         propertiesMap.put("seruCode", code);
         propertiesMap.put("compCode", paramMap.get(RULE_COMP));
 
-        // find the rule using PSerialRuleDAO
-        PSerialRule rule = serialRuleRepository.findOneByProperties(propertiesMap);
-
+        List<PSerialRule> ruleList = serialRuleRepository.findByProperties(propertiesMap);
+        if (ruleList == null || ruleList.isEmpty()) {
+            throw new GlobalCustomizeException(GlobalExceptionEnum.SERIAL_RULE_NOT_EXISTS, propertiesMap.get("compCode"));
+        }
+        if (ruleList.size() != 1) {
+            throw new GlobalCustomizeException(GlobalExceptionEnum.REPEAT_SERIAL_RULE, propertiesMap.get("compCode"),
+                    propertiesMap.get("seruCode"));
+        }
+        PSerialRule rule = ruleList.get(0);
         // get unique suffix
         // use real value of variable to replace the variable symbol
         String senoSuffix = fillRuleByDate(rule.getSeruUniqSuffix(), paramMap, serialDate);
@@ -119,6 +130,7 @@ public class SerialFactory {
         logger.info("{}: {}", Thread.currentThread().getName(), no);
         return no;
     }
+
 
 
     /**
@@ -152,11 +164,17 @@ public class SerialFactory {
      * 查询条件
      *
      * @param propertyMap
+     * @param isPlatform 是否平台标准
      */
-    private void buildParamMap(Map<String, String> propertyMap) {
-        if (!propertyMap.containsKey(RULE_COMP) && sessionContext != null && sessionContext.getUser() != null) {
-            propertyMap.put(RULE_COMP, sessionContext.getUser().getCompCode());
+    private void buildParamMap(Map<String, String> propertyMap, boolean isPlatform) {
+        if (isPlatform) {
+            propertyMap.put(RULE_COMP, globalConfig.getPlatformCompCode());
+        } else {
+            if (!propertyMap.containsKey(RULE_COMP)) {
+                propertyMap.put(RULE_COMP, UserToken.getCompCode());
+            }
         }
+
     }
 
     /**

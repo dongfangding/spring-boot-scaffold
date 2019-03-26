@@ -6,5 +6,5 @@ package com.ddf.scaffold.fw.exception;
  */
 public interface GlobalExceptionCodeResolver {
     /** 返回消息代码 */
-    String getCode();
+    String get();
 }

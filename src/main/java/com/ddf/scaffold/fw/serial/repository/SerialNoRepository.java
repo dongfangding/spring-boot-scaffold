@@ -1,4 +1,4 @@
-package com.ddf.scaffold.fw.repository;
+package com.ddf.scaffold.fw.serial.repository;
 
 import com.ddf.scaffold.fw.entity.PSerialNo;
 import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
@@ -26,6 +26,8 @@ public interface SerialNoRepository extends JpaBaseDao<PSerialNo, Integer> {
     /**
      * 获得序列号,手动控制事务，确保这里的序列号一算出来就把事务提交，防止因序列号已经生成因后续操作导致的延迟事务
      * 提交而导致变数，多个请求会获取不到之前未提交的事务里的序列号，最终导致序列号重复；
+     * // 序列号重复的原因不在于锁的问题，即使是独占锁，但拿到后此时事务未提交对其他事务不可见，其它事务的序列号依然是在
+     * 旧的数据上进行自增；
      * @param propertyMap
      * @return
      */
@@ -43,14 +45,6 @@ public interface SerialNoRepository extends JpaBaseDao<PSerialNo, Integer> {
                         " on duplicate key update" +
                         " seno_current_no = last_insert_id(seno_current_no + 1) ";
                 Query nativeQuery = getEntityManager().createNativeQuery(queryString);
-
-                /**
-                 * 临时测试使用
-                 */
-                if (propertyMap.get("compCode") == null) {
-                    propertyMap.put("compCode", "HT");
-                }
-
                 propertyMap.forEach(nativeQuery::setParameter);
                 int affectRows = nativeQuery.executeUpdate();
                 Long id = null;

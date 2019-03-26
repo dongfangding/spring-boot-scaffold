@@ -2,14 +2,12 @@ package com.ddf.scaffold.fw.jpa;
 
 import com.ddf.scaffold.fw.entity.BaseDomain;
 import com.ddf.scaffold.fw.entity.CompanyDomain;
+import com.ddf.scaffold.fw.entity.QueryParam;
 import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
 import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
+import com.ddf.scaffold.fw.security.UserToken;
 import com.ddf.scaffold.fw.session.RequestContext;
-import com.ddf.scaffold.fw.session.SessionContext;
 import com.ddf.scaffold.fw.util.ConstUtil;
-import com.ddf.scaffold.fw.util.ContextKey;
-import com.ddf.scaffold.fw.util.FieldExtend;
-import com.ddf.scaffold.fw.util.QueryParam;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -19,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -32,18 +29,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * @author DDf on 2018/12/11
+ * TODO 多表连接
+ * @author DDf on 2019/1/24
  */
 public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository<T, S> implements JpaBaseDao<T, S> {
 
     private static final String ID_MUST_NOT_BE_NULL = "The given id must not be null!";
 
+    private static final String LIST_SPLIT_STR = ",";
+
     /**
      * @see JpaBaseDaoAspect
      */
     private ThreadLocal<RequestContext> localRequestContext;
-
-    private ThreadLocal<SessionContext> localSessionContext;
 
     /**
      * JPA操作数据的原生对象
@@ -61,8 +59,7 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
     private String entityName;
 
     /**
-     * 缓存每次调用自定义查询的实体对象的属性信息，重复调用不会重复缓存，因此当系统启动后，
-     * 修改实体信息需要重启服务，提供一个请求参数{@link ContextKey#flushCache}为1的情况下可强制重新缓存，慎用
+     * 缓存每次调用自定义查询的实体对象的属性信息，重复调用不会重复缓存
      */
     private Map<String, Map<String, FieldExtend>> classMap = new ConcurrentHashMap<>();
 
@@ -104,17 +101,6 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
         return this.localRequestContext;
     }
 
-
-    @Override
-    public void setSessionContext(ThreadLocal<SessionContext> sessionContext) {
-        this.localSessionContext = sessionContext;
-    }
-
-    @Override
-    public ThreadLocal<SessionContext> getSessionContext() {
-        return this.localSessionContext;
-    }
-
     /**
      * 根据主键查找一条记录
      *
@@ -141,22 +127,20 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
     /**
      * 复写SimpleJpaRepository的deleteById,将删除改为逻辑删除
      *
-     * @param id
+     * @param id 主键
      */
     @Override
-    @Transactional
     public void deleteById(@NotNull S id) {
-        deleteById(id,true);
+        deleteById(id, true);
     }
 
 
     /**
      * 复写SimpleJpaRepository的删除对象方法，获取对象的id,根据id逻辑删除数据，对象主键必须为id
      *
-     * @param entity
+     * @param entity 实体对象
      */
     @Override
-    @Transactional
     public void delete(@NotNull T entity) {
         deleteById(getId(entity));
     }
@@ -389,15 +373,15 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
 
     /**
      * 根据主键集合删除多条数据,影响函数为0时抛出异常
-     * @param iterable
+     * @param iterable 主键集合
      */
     @Override
-    public void deleteByIds(@NotNull Iterable<S> iterable) {
-        deleteByIds(iterable, true);
+    public Integer deleteByIds(@NotNull Iterable<S> iterable) {
+        return deleteByIds(iterable, true);
     }
 
     @Override
-    public void deleteByIds(@NotNull Iterable<S> iterable, boolean throwable) {
+    public Integer deleteByIds(@NotNull Iterable<S> iterable, boolean throwable) {
         if (iterable == null) {
             throw new IllegalArgumentException("iterable must not be null!");
         }
@@ -408,12 +392,14 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
         if (throwable && num == 0) {
             throw new GlobalCustomizeException(GlobalExceptionEnum.UPDATE_ERROR, num);
         }
+        return num;
     }
 
+
     /**
-     * 根据主键删除，根据throwable判断是否抛出异常
+     * 根据主键删除
      * @param id 主键
-     * @param throwable 当为true时抛出异常
+     * @param throwable 影响行数为0时是否抛出异常
      */
     @Override
     public void deleteById(@NotNull S id, boolean throwable) {
@@ -440,8 +426,8 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
 
     /**
      * 根据检查相等查询条件删除数据，影响函数为0不报错
-     * @param properties
-     * @return
+     * @param properties 属性键值对
+     * @return 返回影响行数
      */
     @Override
     public Integer deleteByProperties(Map<String, Object> properties) {
@@ -454,8 +440,8 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
 
     /**
      * 根据复杂条件删除数据，，影响函数为0不报错
-     * @param queryParams
-     * @return
+     * @param queryParams 查询对象集合
+     * @return 返回影响行数
      */
     @Override
     public Integer deleteByQueryParams(List<QueryParam> queryParams) {
@@ -467,10 +453,22 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
         return 0;
     }
 
+
+    /**
+     * 根据主键判断一个对象是否是新增对象，满足以下任意条件即视为新增对象
+     * 1. 主键为空
+     * 2. isNew(entity)似乎是以版本号来判断的，版本号为空即为new
+     * return versionAttribute.map(it -> wrapper.getPropertyValue(it.getName()) == null).orElse(true);
+     * 3. 对2的判断存疑，加上最后的保证
+     *
+     * @param entity 实体对象
+     * @return 返回是否是新建对象
+     */
     @Override
     public boolean isNew(T entity) {
-        return getId(entity) == null || !existsById(getId(entity));
+        return getId(entity) == null || this.entityInformation.isNew(entity) || !existsById(getId(entity));
     }
+
 
     private String commonHead(boolean isRemoved) {
         String headSql = "FROM " + entityName + " ";
@@ -490,7 +488,6 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
      * @param queryParams 更新的where条件
      */
     @Override
-    @Transactional
     public Integer updateByMap(@NotNull Map<String, Object> fieldMap, @NotNull List<QueryParam> queryParams) {
         StringBuffer sbl = new StringBuffer();
         sbl.append(" update ").append(entityName).append(" set version = version + 1, modifyBy = :modifyBy, ")
@@ -520,15 +517,16 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
      * @return
      */
     private String getUid() {
-        String uid;
-        if (localSessionContext == null || localSessionContext.get().getUid() == null) {
-             uid = ConstUtil.ANONYMOUS_NAME;
-        } else if (localSessionContext.get().getUid() == null) {
-            throw new GlobalCustomizeException(GlobalExceptionEnum.UID_NOT_EXIST);
-        } else {
-            uid = localSessionContext.get().getUid();
-        }
-        return uid;
+//        String uid;
+//        if (localSessionContext == null || localSessionContext.get().getUid() == null) {
+//             uid = ConstUtil.ANONYMOUS_NAME;
+//        } else if (localSessionContext.get().getUid() == null) {
+//            throw new GlobalCustomizeException(GlobalExceptionEnum.UID_NOT_EXIST);
+//        } else {
+//            uid = localSessionContext.get().getUid();
+//        }
+//        return uid;
+        return UserToken.getUserName();
     }
 
 
@@ -557,11 +555,12 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
             Map<String, FieldExtend> fieldMap = getCachedFieldMap();
 
             // QueryParam如果groupName相同，则视为一个()内的条件
-            Map<String, List<QueryParam>> groupMap = queryParams.stream().filter(qm -> !StringUtils.isEmpty(qm.getGroupName())).collect(Collectors
-                    .groupingBy(QueryParam::getGroupName));
+            Map<String, List<QueryParam>> groupMap = queryParams.stream().filter(qm ->
+                    !StringUtils.isEmpty(qm.getGroupName())).collect(Collectors.groupingBy(QueryParam::getGroupName));
 
             // groupName为空，则采用默认的处理，每个条件都是独立的
-            List<QueryParam> notGroupList = queryParams.stream().filter(qm -> StringUtils.isEmpty(qm.getGroupName())).collect(Collectors.toList());
+            List<QueryParam> notGroupList = queryParams.stream().filter(qm ->
+                    StringUtils.isEmpty(qm.getGroupName())).collect(Collectors.toList());
 
             if (!notGroupList.isEmpty()) {
                 dealGroupOrNotGroup(sbl, notGroupList, fieldMap, false);
@@ -573,20 +572,6 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
                 }
             }
         }
-
-        // 处理RequestContext中的paramMap的与实体属性匹配的参数
-        /*boolean contextToField = false;
-        if (localRequestContext != null && ConstUtil.TRUE_STR.equals(localRequestContext.get().get(ContextKey.contextToField.name()))) {
-            Map<String, FieldExtend> fieldMap = getCachedFieldMap();
-            for (Map.Entry<String, Object> entry : localRequestContext.get().entrySet()) {
-                String k = entry.getKey();
-                Object v = entry.getValue();
-                if (fieldMap.containsKey(k) && !StringUtils.isEmpty(v)) {
-                    contextToField = true;
-                    sbl.append(" and ").append(k).append(" = :").append(k).append("_").append(Math.abs(v.hashCode()));
-                }
-            }
-        }*/
 
         // 处理排序
         if (sort != null && sort != Sort.unsorted()) {
@@ -633,39 +618,18 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
                 }
             });
         }
-
-        // 填充处理RequestContext中的paramMap的与实体属性匹配的参数占位符
-        /*if (contextToField) {
-            Map<String, Object> paramMap = localRequestContext.get();
-            Map<String, FieldExtend> fieldMap = getCachedFieldMap();
-            paramMap.forEach((k, v) -> {
-                if (fieldMap.containsKey(k) && !StringUtils.isEmpty(v)) {
-                    FieldExtend fieldExtend = fieldMap.get(k);
-                    Field field = fieldExtend.getField();
-                    // 处理Date类型的处理,value支持Date对象和Long类型的时间毫秒值
-                    if (field.getType().isAssignableFrom(Date.class)) {
-                        if (v instanceof Long) {
-                            v = (new Date((Long) v));
-                        }
-                    }
-                    if (v.getClass().isAssignableFrom(field.getType())) {
-                        query.setParameter(k + "_" + Math.abs(v.hashCode()), (field.getType()));
-                    }
-                }
-            });
-        }*/
-
         return query;
     }
 
     /**
-     *   重要： 如果提示参数类型不匹配的时候，请查询该方法是否包含了实体中所使用的类型；以下方法并没有
-     *   将全部数据类型都进行转换，而是几个常见的类型，如果不满足自己使用，请添加即可；
-     *  目前默认只支持的参数类型只有Integer和String,其它参数都必须转换成字段类型对应的值才可以正常查询；
+     *  重要： 如果提示参数类型不匹配的时候，请查询该方法是否包含了实体中所使用的类型；以下方法并没有
+     *  将全部数据类型都进行转换，而是几个常见的类型，如果不满足自己使用，请添加即可；
+     *  目前前端默认只支持的参数类型只有Integer和String,其它参数都必须转换成字段类型对应的值才可以正常查询；
      *  如Integer类型的参数则传过来一定不能有引号，否则会无法查询；但如果是Byte类型，传过来的值是1，more
      *  也不能正常的和参数类型匹配；如果在后端则必须(byte) 1传过来，而从前端则无法传入明确的参数类型的值，
      *  如果不处理会出现类型不匹配的错误，因此在这里进行转换;
-     *  第二个对于in的条件处理，前端传入特殊的字符串，这里要将字符串根据字段类型转换成对应类型的数组格式才能去处理In
+     *  第二个对于in的条件处理，前端传入特殊的字符串，这里要将字符串根据字段类型转换成对应类型的数组格式才能去处理In，
+     *  如传入1,2,3如果字段类型是Integer,则转换为List<Integer>，如果类型是String,则转换为List<String>
      * @param queryParams
      */
     private void castFieldValueByType(List<QueryParam> queryParams) {
@@ -684,12 +648,16 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
                     iterator.remove();
                 }
                 FieldExtend fieldExtend = fieldMap.get(queryParam.getKey());
+                if (fieldExtend == null) {
+                    throw new GlobalCustomizeException(GlobalExceptionEnum.FIELD_NOT_MATCH, queryParam.getKey(),
+                            entityInformation.getJavaType().getName());
+                }
                 Field field = fieldExtend.getField();
 
 
                 if (String.class.getName().equals(field.getType().getName()) && QueryParam.Op.IN.equals(op)) {
                     if (!(queryParam.getValue() instanceof List)) {
-                        queryParam.setValue(Arrays.asList(String.valueOf(queryParam.getValue()).split(",")));
+                        queryParam.setValue(Arrays.asList(String.valueOf(queryParam.getValue()).split(LIST_SPLIT_STR)));
                     }
                 }
                 // 处理Date类型的处理,value支持Date对象和Long类型的时间毫秒值
@@ -701,7 +669,7 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
                     if (QueryParam.Op.IN.equals(op)) {
                         if (!(queryParam.getValue() instanceof List)) {
                             List<Integer> intList = new ArrayList<>();
-                            String[] strArr = String.valueOf(queryParam.getValue()).split(",");
+                            String[] strArr = String.valueOf(queryParam.getValue()).split(LIST_SPLIT_STR);
                             for (String str : strArr) {
                                 intList.add(Integer.parseInt(str));
                             }
@@ -710,11 +678,24 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
                     } else {
                         queryParam.setValue(Integer.parseInt(String.valueOf(queryParam.getValue())));
                     }
-                }  else if (Byte.class.getName().equals(field.getType().getName())) {
+                } else if (Long.class.getName().equals(field.getType().getName())) {
+                    if (QueryParam.Op.IN.equals(op)) {
+                        if (!(queryParam.getValue() instanceof List)) {
+                            List<Long> longList = new ArrayList<>();
+                            String[] strArr = String.valueOf(queryParam.getValue()).split(LIST_SPLIT_STR);
+                            for (String str : strArr) {
+                                longList.add(Long.parseLong(str));
+                            }
+                            queryParam.setValue(longList);
+                        }
+                    } else {
+                        queryParam.setValue(Long.parseLong(String.valueOf(queryParam.getValue())));
+                    }
+                } else if (Byte.class.getName().equals(field.getType().getName())) {
                     if (QueryParam.Op.IN.equals(op)) {
                         if (!(queryParam.getValue() instanceof List)) {
                             List<Byte> byteList = new ArrayList<>();
-                            String[] strArr = String.valueOf(queryParam.getValue()).split(",");
+                            String[] strArr = String.valueOf(queryParam.getValue()).split(LIST_SPLIT_STR);
                             for (String str : strArr) {
                                 byteList.add(Byte.parseByte(str));
                             }
@@ -727,7 +708,7 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
                     if (QueryParam.Op.IN.equals(op)) {
                         if (!(queryParam.getValue() instanceof List)) {
                             List<BigDecimal> bigDecimalList = new ArrayList<>();
-                            String[] bigDecimals = String.valueOf(queryParam.getValue()).split(",");
+                            String[] bigDecimals = String.valueOf(queryParam.getValue()).split(LIST_SPLIT_STR);
                             for (String bigDecimal : bigDecimals) {
                                 bigDecimalList.add(new BigDecimal(bigDecimal));
                             }
@@ -760,10 +741,10 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
             defaultQueryParamField(param);
             String key = param.getKey();
             Object value = param.getValue();
-            if (value == null) {
+            QueryParam.Op op = param.getOp();
+            if (!QueryParam.Op.NN.equals(op) && !QueryParam.Op.NI.equals(op) && value == null) {
                 continue;
             }
-            QueryParam.Op op = param.getOp();
             if (!fieldMap.containsKey(key)) {
                 throw new GlobalCustomizeException(GlobalExceptionEnum.FIELD_NOT_MATCH, key,
                         entityInformation.getJavaType().getName());
@@ -798,15 +779,12 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
 
     /**
      * 获得对象的字段，然后缓存起来，下次使用直接返回，
-     * 存在问题，如果字段进行修改，但项目没有重启，会存在字段对应不上的问题，所以再修改字段后，最好重启服务;
-     * 提供一个请求参数{@link ContextKey#flushCache}，如果为1则强制刷新缓存，一般最好不要使用；
      */
     private Map<String, FieldExtend> getCachedFieldMap() {
         Class clazz = entityInformation.getJavaType();
         String className = clazz.getSimpleName();
         Map<String, FieldExtend> fieldMap = classMap.get(className);
-        if (fieldMap == null || (localRequestContext != null && ConstUtil.TRUE_STR
-                .equals(localRequestContext.get().get(ContextKey.flushCache.name())))) {
+        if (fieldMap == null || (localRequestContext != null)) {
             fieldMap = new HashMap<>(20);
             Field[] fields;
             // BaseDomain
@@ -851,13 +829,7 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
     }
 
     @Override
-    @Transactional
     public <S1 extends T> S1 save(@NotNull S1 entity) {
-        if (getId(entity) != null) {
-            if (entity.getVersion() == null) {
-                throw new GlobalCustomizeException(GlobalExceptionEnum.VERSION_MISSION);
-            }
-        }
         try {
             if (this.entityInformation.isNew(entity)) {
                 this.entityManager.persist(entity);
@@ -865,15 +837,13 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
             } else {
                 return this.entityManager.merge(entity);
             }
-            // fixme catch不到
         } catch (ObjectOptimisticLockingFailureException | StaleObjectStateException exception) {
-            throw new GlobalCustomizeException("数据已被修改，请刷新重试");
+            throw new GlobalCustomizeException(GlobalExceptionEnum.OBJECT_OPTIMISTIC_LOCKING);
         }
     }
 
 
     @Override
-    @Transactional
     public <S1 extends T> List<S1> saveAll(Iterable<S1> entities) {
         Assert.notNull(entities, "The given Iterable of entities not be null!");
 
@@ -886,19 +856,19 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
         return result;
     }
 
+
+    /**
+     * 根据主键判断数据是否存在
+     * @param id 主键
+     * @return
+     */
     @Override
     public boolean existsById(S id) {
         Assert.notNull(id, ID_MUST_NOT_BE_NULL);
         return findById(id).isPresent();
     }
 
-    /**
-     * 或得实体类主键的值
-     * @param entity
-     * @return
-     */
-    @Override
-    public S getId(@NotNull T entity) {
+    private S getId(@NotNull T entity) {
         return (S) entity.getId();
     }
 }

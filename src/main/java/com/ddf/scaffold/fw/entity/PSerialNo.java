@@ -14,7 +14,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
-public class PSerialNo extends BaseDomain implements Serializable {
+public class PSerialNo extends CompanyDomain implements Serializable {
 	private static final long serialVersionUID = 3603749308663591961L;
 	@Column(name = "SENO_CURRENT_NO")
 	private Long senoCurrentNo;
@@ -27,7 +27,5 @@ public class PSerialNo extends BaseDomain implements Serializable {
 	private String seruCode;
 	@Column(name = "SERU_ID")
 	private Integer seruId;
-	@Column(name = "COMP_CODE")
-	private String compCode;
 
 }

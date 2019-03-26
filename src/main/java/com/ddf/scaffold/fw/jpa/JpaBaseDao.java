@@ -1,9 +1,8 @@
 package com.ddf.scaffold.fw.jpa;
 
 import com.ddf.scaffold.fw.entity.BaseDomain;
+import com.ddf.scaffold.fw.entity.QueryParam;
 import com.ddf.scaffold.fw.session.RequestContext;
-import com.ddf.scaffold.fw.session.SessionContext;
-import com.ddf.scaffold.fw.util.QueryParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author DDf on 2018/12/11
+ * TODO 多表连接
+ * @author DDf on 2019/1/24
  */
 @NoRepositoryBean
 public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S> {
@@ -32,20 +32,6 @@ public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S>
      * @see JpaBaseDaoAspect
      */
     void setRequestContext(ThreadLocal<RequestContext> requestContext);
-
-    /**
-     * 获得RequestContext的值，必须调用{@link JpaBaseDao#setRequestContext(ThreadLocal)}，才会有值，用于使用完毕后释放对象
-     * @see JpaBaseDaoAspect
-     * @return
-     */
-    ThreadLocal<SessionContext> getSessionContext();
-
-    /**
-     * 设置RequestContext 的值，因为{@link JpaBaseDaoImpl}非容器管理类，获取不了，只能提供方法通过反射设置
-     * @param requestContext
-     * @see JpaBaseDaoAspect
-     */
-    void setSessionContext(ThreadLocal<SessionContext> requestContext);
 
     /**
      * 获得RequestContext的值，必须调用{@link JpaBaseDao#setRequestContext(ThreadLocal)}，才会有值，用于使用完毕后释放对象
@@ -195,20 +181,22 @@ public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S>
     /**
      * 根据主键集合删除多条数据,影响函数为0时抛出异常
      * @param iterable
+     * @return 返回影响行数
      */
-    void deleteByIds(@NotNull Iterable<S> iterable);
+    Integer deleteByIds(@NotNull Iterable<S> iterable);
 
     /**
      * 根据主键集合删除多条数据
-     * @param iterable
+     * @param iterable 主键集合
      * @param throwable 影响行数为0时是否抛出异常
+     * @return 返回影响行数
      */
-    void deleteByIds(@NotNull Iterable<S> iterable, boolean throwable);
+    Integer deleteByIds(@NotNull Iterable<S> iterable, boolean throwable);
 
     /**
-     * 根据主键删除，根据throwable判断是否抛出异常
+     * 根据主键删除
      * @param id 主键
-     * @param throwable 当为true时抛出异常
+     * @param throwable 影响行数为0时是否抛出异常
      */
     void deleteById(@NotNull S id, boolean throwable);
 
@@ -229,33 +217,29 @@ public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S>
 
     /**
      * 根据检查相等查询条件删除数据，影响函数为0不报错
-     * @param properties
-     * @return
+     * @param properties 查询属性键值对
+     * @return 返回影响行数
      */
     Integer deleteByProperties(Map<String, Object> properties);
 
 
     /**
      * 根据复杂条件删除数据，，影响函数为0不报错
-     * @param queryParams
-     * @return
+     * @param queryParams 查询对象集合
+     * @return 返回影响行数
      */
     Integer deleteByQueryParams(List<QueryParam> queryParams);
 
     /**
      * 根据主键判断一个对象是否是新增对象，满足以下任意条件即视为新增对象
      * 1. 主键为空
-     * 2. 主键不为空且在数据库中不存在
-     * @param entity
-     * @return
+     * 2. isNew(entity)似乎是以版本号来判断的，版本号为空即为new
+     * return versionAttribute.map(it -> wrapper.getPropertyValue(it.getName()) == null).orElse(true);
+     * 3. 对2的判断存疑，加上最后的保证
+     *
+     * @param entity 实体对象
+     * @return 返回是否是新建对象
      */
     boolean isNew(T entity);
 
-
-    /**
-     * 或得实体类主键的值
-     * @param entity
-     * @return
-     */
-    S getId(@NotNull T entity);
 }

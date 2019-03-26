@@ -1,11 +1,11 @@
-package com.ddf.scaffold.controller;
+package com.ddf.scaffold.logic.controller;
 
-import com.ddf.scaffold.entity.User;
+import com.ddf.scaffold.logic.entity.User;
 import com.ddf.scaffold.fw.session.RequestContext;
 import com.ddf.scaffold.fw.session.SessionContext;
-import com.ddf.scaffold.fw.util.QueryParam;
-import com.ddf.scaffold.repository.UserRepository;
-import com.ddf.scaffold.service.UserService;
+import com.ddf.scaffold.fw.entity.QueryParam;
+import com.ddf.scaffold.logic.repository.UserRepository;
+import com.ddf.scaffold.logic.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,17 +92,6 @@ public class UserController {
 	@RequestMapping("/delete/{id}")
 	public void delete(@PathVariable Long id) {
 		userRepository.deleteById(id);
-	}
-
-	/**
-	 * 根据用户名或密码精确查找匹配用户列表
-	 * @param userKey 用户关键字
-	 * @param userId userId 当前用户自己，不能把自己查出来
-	 * @return
-	 */
-	@RequestMapping("searchUserForPartner")
-	public List<User> searchUserForPartner(@RequestParam String userKey, @RequestParam Long userId) {
-		return userService.searchUserForPartner(userKey, userId);
 	}
 
 }

@@ -1,6 +1,6 @@
-package com.ddf.scaffold.service;
+package com.ddf.scaffold.logic.service;
 
-import com.ddf.scaffold.entity.User;
+import com.ddf.scaffold.logic.entity.User;
 
 import javax.mail.MessagingException;
 import java.util.List;
@@ -23,15 +23,6 @@ public interface UserService {
 	 * @return
 	 */
 	User registry(User user);
-
-
-	/**
-	 * 通过关键字查询可以添加的伙伴列表
-	 * @param userKey 用户关键字
-	 * @param userId 用户自己的id，不能把用户自己查出来
-	 * @return
-	 */
-	List<User> searchUserForPartner(String userKey, Long userId);
 
 	/**
 	 * 验证注册用户邮箱

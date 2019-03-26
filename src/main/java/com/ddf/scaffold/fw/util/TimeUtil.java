@@ -151,10 +151,4 @@ public class TimeUtil {
         localStringBuffer.append("日");  
         return localStringBuffer.toString();  
     }  
-	
-	
-	public static void main(String[] args) {
-		System.out.println(getYear());
-		System.out.println(getMonth());
-	}
 }

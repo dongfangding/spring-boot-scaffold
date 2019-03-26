@@ -1,4 +1,4 @@
-package com.ddf.scaffold.fw.util;
+package com.ddf.scaffold.fw.entity;
 
 import lombok.*;
 

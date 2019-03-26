@@ -25,4 +25,25 @@ import java.lang.annotation.*;
 @Documented
 @Import(value = {LogAspectRegistrar.class})
 public @interface EnableLogAspect {
+
+    /**
+     * 默认属性，一旦使用该注解，则默认开启功能
+     * @return
+     */
+    boolean enableLogAspect() default true;
+
+    /**
+     * 被拦截的方法从入参到结束执行多久算是执行慢的方法，单位为毫秒;
+     * 可以设置为自己需要的时间，一旦一个方法最终结束的时间超过阈值，则会被捕捉到并提供一个回调接口给使用者处理逻辑
+     * @return
+     */
+    long slowTime() default 1000;
+
+    /**
+     * 忽略的完整类名#方法名，支持包名
+     * 如： com.test.controller.TestController#test // 忽略TestController的test方法不计入计算slowTime
+     * 如： com.test.controller // 忽略整个com.test.controller包下的所有方法
+     * @return
+     */
+    String[] ignore() default {};
 }

@@ -1,13 +1,18 @@
-package com.ddf.scaffold.repository;
+package com.ddf.scaffold.logic.repository;
 
-import com.ddf.scaffold.entity.User;
+import com.ddf.scaffold.fw.exception.CNMessage;
+import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
+import com.ddf.scaffold.logic.entity.User;
 import com.ddf.scaffold.fw.jpa.JpaBaseDao;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author DDf on 2018/12/1
@@ -32,13 +37,22 @@ public interface UserRepository extends JpaBaseDao<User, Long> {
 	 */
 	User getUserByUserNameOrEmail(String userName, String email);
 
-
 	/**
-	 * 通过关键字查询可以添加的伙伴列表，不能把自己查出来
-	 * @param userKey 用户关键字
-	 * @param userId 用户自己的id
+	 * 根据登录用户名查找用户
+	 * @param loginName
 	 * @return
 	 */
-	@Query("from User where (userName = :key or email =:key) and removed = 0 and id <> :userId")
-	List<User> searchUserForPartner(@Param("key") String userKey, @Param("userId") Long userId);
+	@Transactional(readOnly = true)
+	default User getUserByLoginName(@NotNull String loginName) {
+		Map<String, Object> propertiesMap = new HashMap<>(2);
+		propertiesMap.put("loginName", loginName);
+		List<User> userList = findByProperties(propertiesMap);
+		if (userList != null && userList.size() > 0) {
+			if (userList.size() == 1) {
+				return userList.get(0);
+			}
+			throw new GlobalCustomizeException(CNMessage.USER_LOGIN_NAME_REPEAT, loginName);
+		}
+		return null;
+	}
 }

@@ -1,7 +1,6 @@
 package com.ddf.scaffold.fw.util;
 
 
-
 import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
 
 import java.util.Locale;
@@ -71,14 +70,13 @@ public class ConstUtil {
 	}
 
 	/**
-	 * TODO 是否设置什么参数来决定每个方法的入参都校验呢？
 	 * @param params
 	 */
 	public static void fastFailureParamMission(Object... params) {
 		if (params.length > 0) {
 			for (Object param : params) {
 				if (isNull(param)) {
-					throw new GlobalCustomizeException("参数丢失.......");
+					throw new GlobalCustomizeException("请输入必填项.......");
 				}
 			}
 		}

@@ -1,14 +1,14 @@
-package com.ddf.scaffold.service.impl;
+package com.ddf.scaffold.logic.service.impl;
 
-import com.ddf.scaffold.entity.User;
+import com.ddf.scaffold.logic.entity.User;
 import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
 import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
 import com.ddf.scaffold.fw.session.SessionContext;
 import com.ddf.scaffold.fw.util.ConstUtil;
 import com.ddf.scaffold.fw.util.MailUtil;
-import com.ddf.scaffold.fw.util.QueryParam;
-import com.ddf.scaffold.repository.UserRepository;
-import com.ddf.scaffold.service.UserService;
+import com.ddf.scaffold.fw.entity.QueryParam;
+import com.ddf.scaffold.logic.repository.UserRepository;
+import com.ddf.scaffold.logic.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,14 +60,14 @@ public class UserServiceImpl implements UserService {
 	public User registry(User user) {
 		if (user != null) {
 			String userName = user.getUserName();
-			String email = user.getEmail();
+			String email = user.getUserEmail();
 
 			String sessionValidateEmail = String.valueOf(sessionContext.get("validateEmail"));
 			if (!sessionValidateEmail.equals(user.getValidateEmail())) {
 				throw new GlobalCustomizeException(GlobalExceptionEnum.VALIDATE_EMAIL_ERROR);
 			}
 
-			ConstUtil.fastFailureParamMission(userName, user.getPassword(), user.getEmail());
+			ConstUtil.fastFailureParamMission(userName, user.getPassword(), user.getUserEmail());
 			User exist = userRepository.getUserByUserNameOrEmail(userName, email);
 			if (exist != null) {
 				throw new GlobalCustomizeException(GlobalExceptionEnum.USER_EXIST, exist.getUserName());
@@ -83,22 +83,6 @@ public class UserServiceImpl implements UserService {
 			return user;
 		}
 		return null;
-	}
-
-
-	/**
-	 * 通过关键字查询可以添加的伙伴列表
-	 * @param userKey 用户关键字
-	 * @param userId  用户id，不能把自己查出来
-	 * @return
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<User> searchUserForPartner(String userKey, Long userId) {
-		ConstUtil.fastFailureParamMission(userKey);
-		ConstUtil.fastFailureParamMission(userId);
-		List<QueryParam> queryParams = new ArrayList<>();
-		return userRepository.searchUserForPartner(userKey, userId);
 	}
 
 

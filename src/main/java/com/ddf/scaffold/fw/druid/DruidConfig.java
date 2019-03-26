@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * @author DDf on 2019/1/21
@@ -32,6 +33,11 @@ public class DruidConfig {
     @Setter
     private Config druidProperties = new Config();
 
+    /**
+     * http://ip:port/druid/login.html
+     * 使用数据库用户名和密码登录可以查看SQL监控
+     * @return
+     */
     @Bean
     public ServletRegistrationBean druidServlet() {
         ServletRegistrationBean reg = new ServletRegistrationBean();
@@ -71,6 +77,8 @@ public class DruidConfig {
         datasource.setTestOnReturn(druidProperties.isTestOnReturn());
         datasource.setPoolPreparedStatements(druidProperties.isPoolPreparedStatements());
         datasource.setMaxOpenPreparedStatements(druidProperties.getMaxOpenPreparedStatements());
+        datasource.setAsyncInit(druidProperties.isAsyncInit());
+        datasource.setConnectProperties(druidProperties.getConnectionProperties());
         try {
             datasource.setFilters(druidProperties.getFilters());
         } catch (SQLException e) {
@@ -117,6 +125,10 @@ public class DruidConfig {
         private boolean poolPreparedStatements;
 
         private int maxOpenPreparedStatements;
+
+        private boolean asyncInit;
+
+        private Properties connectionProperties;
 
     }
 }

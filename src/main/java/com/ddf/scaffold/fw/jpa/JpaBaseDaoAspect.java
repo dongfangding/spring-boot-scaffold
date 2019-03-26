@@ -1,11 +1,9 @@
 package com.ddf.scaffold.fw.jpa;
 
 import com.ddf.scaffold.fw.session.RequestContext;
-import com.ddf.scaffold.fw.session.SessionContext;
 import lombok.Setter;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,22 +22,19 @@ import java.lang.reflect.Method;
  * @author DDf on 2019/1/17
  */
 @Component
-@Aspect
+//@Aspect
 public class JpaBaseDaoAspect {
     @Autowired(required = false)
     @Setter
     private RequestContext requestContext;
     @Autowired(required = false)
-    @Setter
-    private SessionContext sessionContext;
 
-    public void boundThreadScope(ThreadLocal<RequestContext> requestLocal, ThreadLocal<SessionContext> sessionLocal) {
+    public void boundThreadScope(ThreadLocal<RequestContext> requestLocal) {
         this.requestContext = requestLocal.get();
-        this.sessionContext = sessionLocal.get();
     }
 
 
-    @Pointcut(value = "execution(public * com.ddf.scaffold.fw.jpa.JpaBaseDao.*(..))")
+    @Pointcut(value = "execution(public * com.hitisoft.hidoc.fw.jpa.JpaBaseDao.*(..))")
     public void pointcut() {}
 
     @Before("pointcut()")
@@ -57,13 +52,9 @@ public class JpaBaseDaoAspect {
     private void setLocalVariable(JoinPoint joinPoint) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Class<?> target = joinPoint.getTarget().getClass();
         Method setRequestContext = target.getDeclaredMethod("setRequestContext", ThreadLocal.class);
-        Method setSessionContext = target.getDeclaredMethod("setSessionContext", ThreadLocal.class);
         ThreadLocal<RequestContext> localRequest = new ThreadLocal<>();
         localRequest.set(requestContext);
-        ThreadLocal<SessionContext> localSession = new ThreadLocal<>();
-        localSession.set(sessionContext);
         setRequestContext.invoke(joinPoint.getTarget(), localRequest);
-        setSessionContext.invoke(joinPoint.getTarget(), localSession);
     }
 
 
@@ -82,10 +73,7 @@ public class JpaBaseDaoAspect {
     private void releaseLocalVariable(JoinPoint joinPoint) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Class<?> target = joinPoint.getTarget().getClass();
         Method getRequestContext = target.getDeclaredMethod("getRequestContext");
-        Method getSessionContext = target.getDeclaredMethod("getSessionContext");
         ThreadLocal<RequestContext> localRequest = (ThreadLocal<RequestContext>) getRequestContext.invoke(joinPoint.getTarget());
-        ThreadLocal<SessionContext> localSession = (ThreadLocal<SessionContext>) getSessionContext.invoke(joinPoint.getTarget());
         localRequest.remove();
-        localSession.remove();
     }
 }

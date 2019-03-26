@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8089
 spring:
   datasource:
     initialization-mode: never
@@ -9,20 +9,23 @@ spring:
       password: 123456
       url: jdbc:mysql://localhost:3306/honeytask?characterEncoding=utf8&useSSL=true&serverTimezone=GMT%2B8&zeroDateTimeBehavior=convertToNull
       name: druid
-      initialSize: 5
-      minIdle: 5
-      maxActive: 20
-      maxWait: 60000
+      initialSize: 3
+      minIdle: 3
+      maxActive: 15
+      maxWait: 5000
       timeBetweenEvictionRunsMillis: 60000
       minEvictableIdleTimeMillis: 300000
       validationQuery: SELECT 1 FROM DUAL
       testWhileIdle: true
-      testOnBorrow: true
+      testOnBorrow: false
       testOnReturn: false
       filters: stat,wall,slf4j
       logSlowSql: true
       poolPreparedStatements: true
       maxOpenPreparedStatements: 20
+      asyncInit: true
+      connectionProperties:
+        druid.stat.slowSqlMillis: 3000
   jpa:
     show-sql: true
     database: MYSQL
@@ -43,17 +46,17 @@ spring:
     host: smtp.qq.com                         # 邮件服务器类型
     properties.mail.smtp.ssl.enable: true # 用以支持授权码登陆
 
-  redis:
-    host: 192.168.1.6 # redis主机
-    database: 0 # 默认操作哪个数据库
-    port: 6379 # 端口号
-    jedis:
-     pool:
-       max-active: 50
-       min-idle: 1
-       max-idle: 20
-
 
 custom:  # 自定义的属性最好都写在custom前缀下，方便辨认
-  login-interceptor:
-    ignoreFile: /druid,/user/login,/user/registry,/user/validateEmail,/user/users   # 不需要校验登录的请求
+  global-config:
+    anonymousName: SYSTEM
+    initPassword: 123456
+    platformCompCode: 0
+  config-util:
+    dataUrl: http://localhost:8089/data
+    dataRealDir: D:/dev-tools/idea_root/HiDoc/src/main/webapp/data
+    dataDir: data
+    templateDir: templates
+    attachDir: attach
+    tempDir: temp
+

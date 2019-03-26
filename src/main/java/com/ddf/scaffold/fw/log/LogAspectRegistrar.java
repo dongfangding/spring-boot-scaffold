@@ -5,6 +5,8 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 
+import java.util.Map;
+
 /**
  * @author DDf on 2018/11/7
  */
@@ -21,9 +23,8 @@ public class LogAspectRegistrar implements ImportBeanDefinitionRegistrar {
      */
     private void registryLogAspect(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
         boolean exist = metadata.hasAnnotation(EnableLogAspect.class.getName());
-        boolean enableLogAspect = false;
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(LogAspectConfiguration.class);
         if (exist) {
-            enableLogAspect = true;
             // 拦截器默认不开启，只有开启了相关功能才注入到IOC，使之生效
             if (!registry.containsBeanDefinition(AccessLogAspect.BEAN_NAME)) {
                 BeanDefinitionBuilder requestContextDefinition = BeanDefinitionBuilder.
@@ -31,9 +32,12 @@ public class LogAspectRegistrar implements ImportBeanDefinitionRegistrar {
                 registry.registerBeanDefinition(AccessLogAspect.BEAN_NAME,
                         requestContextDefinition.getBeanDefinition());
             }
+            Map<String, Object> defaultAttrs = metadata
+                    .getAnnotationAttributes(EnableLogAspect.class.getName(), true);
+            if (defaultAttrs != null && !defaultAttrs.isEmpty()) {
+                defaultAttrs.forEach(builder::addPropertyValue);
+            }
         }
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(LogAspectConfiguration.class);
-        builder.addPropertyValue("enableLogAspect", enableLogAspect);
         registry.registerBeanDefinition(LogAspectConfiguration.BEAN_NAME, builder.getBeanDefinition());
     }
 }
