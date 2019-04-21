@@ -75,9 +75,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/data/**").permitAll()
                 .antMatchers("/druid/**").permitAll()
                 .antMatchers("/ws/**").permitAll()
+                // FIXME 删除
+                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();
 
-        // Custom JWT based security filter
         JwtAuthorizationTokenFilter authenticationTokenFilter = new JwtAuthorizationTokenFilter(
                 userDetailsService(), jwtTokenUtil, tokenHeader, configUtil);
         httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);

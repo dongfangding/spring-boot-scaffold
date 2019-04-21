@@ -119,8 +119,8 @@ public class WebConfig implements WebMvcConfigurer {
 	public Executor taskExecutor() {
 		ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
 		threadPoolTaskExecutor.setThreadNamePrefix("default-thread-pool-%d");
-		threadPoolTaskExecutor.setCorePoolSize(8);
-		threadPoolTaskExecutor.setMaxPoolSize(50);
+		threadPoolTaskExecutor.setCorePoolSize(Runtime.getRuntime().availableProcessors());
+		threadPoolTaskExecutor.setMaxPoolSize(Runtime.getRuntime().availableProcessors() * 2 + 1);
 		threadPoolTaskExecutor.setKeepAliveSeconds(0);
 		threadPoolTaskExecutor.setQueueCapacity(1000);
 		return threadPoolTaskExecutor;
@@ -135,9 +135,9 @@ public class WebConfig implements WebMvcConfigurer {
 	@Primary
 	public Executor scheduledExecutorService() {
 		ThreadFactory namedThreadFactory = new CustomizableThreadFactory("scheduledExecutorService-%d");
-		ScheduledThreadPoolExecutor scheduledExecutorService = new ScheduledThreadPoolExecutor(8,
+		ScheduledThreadPoolExecutor scheduledExecutorService = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),
 				namedThreadFactory);
-		scheduledExecutorService.setMaximumPoolSize(50);
+		scheduledExecutorService.setMaximumPoolSize(Runtime.getRuntime().availableProcessors() * 2 + 1);
 		return scheduledExecutorService;
 	}
 }

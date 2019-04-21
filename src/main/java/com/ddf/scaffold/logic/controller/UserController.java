@@ -80,15 +80,6 @@ public class UserController {
 	}
 
 
-	/**
-	 * 修改密码
-	 * @return
-	 */
-	@RequestMapping("/updatePassword")
-	public User updatePassword(@RequestBody User user) {
-		return userService.updatePassword(user);
-	}
-
 	@RequestMapping("/delete/{id}")
 	public void delete(@PathVariable Long id) {
 		userRepository.deleteById(id);

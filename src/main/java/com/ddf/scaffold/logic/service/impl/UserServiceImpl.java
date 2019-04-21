@@ -1,12 +1,11 @@
 package com.ddf.scaffold.logic.service.impl;
 
-import com.ddf.scaffold.logic.entity.User;
 import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
 import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
 import com.ddf.scaffold.fw.session.SessionContext;
 import com.ddf.scaffold.fw.util.ConstUtil;
 import com.ddf.scaffold.fw.util.MailUtil;
-import com.ddf.scaffold.fw.entity.QueryParam;
+import com.ddf.scaffold.logic.entity.User;
 import com.ddf.scaffold.logic.repository.UserRepository;
 import com.ddf.scaffold.logic.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,9 @@ import org.springframework.util.StringUtils;
 
 import javax.mail.MessagingException;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * @author DDf on 2018/12/1
@@ -43,8 +44,6 @@ public class UserServiceImpl implements UserService {
 		ConstUtil.fastFailureParamMission(userName, password);
 		User user = userRepository.getUserByUserNameAndPassword(userName, password);
 		if (user != null) {
-			sessionContext.setUid(user.getUserName());
-			sessionContext.setUser(user);
 			return user;
 		}
 		throw new GlobalCustomizeException(GlobalExceptionEnum.LOGIN_ERROR);
@@ -59,27 +58,12 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public User registry(User user) {
 		if (user != null) {
-			String userName = user.getUserName();
-			String email = user.getUserEmail();
-
-			String sessionValidateEmail = String.valueOf(sessionContext.get("validateEmail"));
-			if (!sessionValidateEmail.equals(user.getValidateEmail())) {
-				throw new GlobalCustomizeException(GlobalExceptionEnum.VALIDATE_EMAIL_ERROR);
-			}
-
-			ConstUtil.fastFailureParamMission(userName, user.getPassword(), user.getUserEmail());
-			User exist = userRepository.getUserByUserNameOrEmail(userName, email);
-			if (exist != null) {
-				throw new GlobalCustomizeException(GlobalExceptionEnum.USER_EXIST, exist.getUserName());
-			}
-			sessionContext.setUid(user.getUserName());
-			sessionContext.setUser(user);
 			user = userRepository.save(user);
-			try {
-				mailUtil.sendMimeMail(new String[] {"dongfang.ding@hitisoft.com"}, "注册成功", "恭喜您注册成功");
-			} catch (MessagingException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				mailUtil.sendMimeMail(new String[] {"dongfang.ding@hitisoft.com"}, "注册成功", "恭喜您注册成功");
+//			} catch (MessagingException e) {
+//				e.printStackTrace();
+//			}
 			return user;
 		}
 		return null;
@@ -109,26 +93,5 @@ public class UserServiceImpl implements UserService {
 			sessionContext.put("validateEmail", str.toString());
 			mailUtil.sendMimeMail(new String[] {email}, "注册验证码", content);
 		}
-	}
-
-
-	/**
-	 * 修改密码
-	 * @return
-	 */
-	@Override
-	@Transactional
-	public User updatePassword(User user) {
-		ConstUtil.fastFailureParamMission(user.getOldPassword(), user.getPassword(), user.getConfirmPassword());
-		User currUser = (User) sessionContext.getUser();
-		String currPassword = currUser.getPassword();
-		if (!user.getOldPassword().equals(currPassword)) {
-			throw new GlobalCustomizeException(GlobalExceptionEnum.PASSWORD_ERROR);
-		}
-		currUser.setVersion(user.getVersion());
-		currUser.setPassword(user.getPassword());
-		currUser = userRepository.save(currUser);
-		sessionContext.setUser(currUser);
-		return currUser;
 	}
 }

@@ -3,7 +3,6 @@ package com.ddf.scaffold.logic.service;
 import com.ddf.scaffold.logic.entity.User;
 
 import javax.mail.MessagingException;
-import java.util.List;
 
 /**
  * @author DDf on 2018/12/1
@@ -30,11 +29,5 @@ public interface UserService {
 	 */
 	void validateEmail(String email) throws MessagingException;
 
-
-	/**
-	 * 修改密码
-	 * @return
-	 */
-    User updatePassword(User user);
 
 }

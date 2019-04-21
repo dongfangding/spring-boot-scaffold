@@ -1,7 +1,5 @@
 package com.ddf.scaffold.fw.interceptor;
 
-import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
-import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
 import com.ddf.scaffold.fw.session.SessionContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,7 +43,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 				}
 			}
 			if (!isMatch && !"/error".equals(servletPath)) {
-				throw new GlobalCustomizeException(GlobalExceptionEnum.USER_NOT_LOGIN);
+				// FIXME
+//				throw new GlobalCustomizeException(GlobalExceptionEnum.USER_NOT_LOGIN);
 			}
 		}
 		return true;

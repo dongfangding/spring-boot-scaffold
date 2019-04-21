@@ -42,7 +42,7 @@
 
     <!-- 日志输出级别 -->
     <springProfile name="default,dev">
-        <root level="INFO">
+        <root level="info">
             <appender-ref ref="STDOUT" />
         </root>
     </springProfile>

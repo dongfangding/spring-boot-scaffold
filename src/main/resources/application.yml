@@ -47,6 +47,20 @@ spring:
     properties.mail.smtp.ssl.enable: true # 用以支持授权码登陆
 
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: 123456
+    virtual-host: rabbitmq # 创建的虚拟主机，可以简单理解为一个实例，所有队列交换器路由等都是在它的基础上，默认为/，最好自己新建一个
+    publisher-confirms: true # 消息被投递之后如何确保一定被正确投递或消费，开启conform模式
+    listener:
+      direct:
+        acknowledge-mode: manual  # 开启手动ack
+      simple:
+        acknowledge-mode: manual # 开启手动ack
+
+
 custom:  # 自定义的属性最好都写在custom前缀下，方便辨认
   global-config:
     anonymousName: SYSTEM
