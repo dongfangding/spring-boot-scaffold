@@ -1,6 +1,8 @@
 package com.ddf.scaffold.fw.mq.controller;
 
 import com.ddf.scaffold.fw.mq.ProductConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("mq")
 public class HelloQueueController {
+	public final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
@@ -25,6 +28,7 @@ public class HelloQueueController {
 		Map<String, String> obj = new HashMap<>();
 		obj.put("key", msg);
 		rabbitTemplate.convertAndSend(ProductConfig.HELLO_QUEUE, msg);
+		logger.info("发送消息: {}", obj);
 	}
 
 	/**
@@ -34,8 +38,9 @@ public class HelloQueueController {
 	@RequestMapping("toFanoutQueue")
 	public void toFanoutQueue(@RequestParam String msg) {
 		// fanout类型的routingKey无意义不需要指定，一般为空字符串即可
-		for (int i = 0; i < 100000; i++) {
+		for (int i = 0; i < 10; i++) {
 			rabbitTemplate.convertAndSend(ProductConfig.EXCHANGE_FANOUT, "", msg + i);
+			logger.info("发送消息: {}", msg + i);
 		}
 	}
 

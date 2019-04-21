@@ -24,6 +24,15 @@ public class ConsumerMessage {
 
 
 	/**
+	 *
+	 * 开启手动ack之后，如果消费端不调用basicAck方法，则消息会一直处理unack状态，而如果处理失败之后调用basicNack或basicReject将requeue的值设置为
+	 * true之后消息会被自动设置回队列，而且是队列头部，这样就会导致如果该条消息会一直报错，那么就会造成无限重投和失败，而如果设置为false，则该条消息会直接删除;
+	 * 而如果不调用的话，该消息的状态会为unack
+	 *
+	 * 解决方案之一：
+	 *  最好不要重新投递，消费成功的就直接ack，而如果消费失败的，那么就将消费失败的消息保存到本地数据库中，然后再将消息删除
+	 *
+	 *
 	 * @param msg
 	 * @param queue
 	 */
@@ -34,12 +43,14 @@ public class ConsumerMessage {
 			if (true) {
 				throw new RuntimeException("处理任务失败！");
 			}
-			// 开启了手动确认之后，要自己编码确认消息已收到,如果有自己的业务逻辑，则处理完业务逻辑之后再手动确认？
 			channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+			// 开启了手动确认之后，要自己编码确认消息已收到,如果有自己的业务逻辑，则处理完业务逻辑之后再手动确认？
 			logger.info("receiveStringFromQueue队列消费到消息.....{}", msg);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-			channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
+			logger.info("--------------------{}--------------------", message.getMessageProperties().getDeliveryTag());
+			channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
+			throw new RuntimeException(e);
 		}
 	}
 }
