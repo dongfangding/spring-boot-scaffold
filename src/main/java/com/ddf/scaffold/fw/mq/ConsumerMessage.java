@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  *
@@ -30,7 +31,7 @@ public class ConsumerMessage {
 	 * 而如果不调用的话，该消息的状态会为unack
 	 *
 	 * 解决方案之一：
-	 *  最好不要重新投递，消费成功的就直接ack，而如果消费失败的，那么就将消费失败的消息保存到本地数据库中，然后再将消息删除
+	 *  最好不要重新投递，消费成功的就直接ack，而如果消费失败的，那么就将消费失败的消息保存到本地数据库中或者什么的业务逻辑处理，然后再将消息删除
 	 *
 	 *
 	 * @param msg
@@ -38,14 +39,14 @@ public class ConsumerMessage {
 	 */
 	@RabbitHandler
 	@Async("taskExecutor")
-	public void receiveStringFromQueue(String msg, Channel channel, Message message) throws IOException {
+	public void receiveFromQueue(Map msg, Channel channel, Message message) throws IOException {
 		try {
 			if (true) {
 				throw new RuntimeException("处理任务失败！");
 			}
 			channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 			// 开启了手动确认之后，要自己编码确认消息已收到,如果有自己的业务逻辑，则处理完业务逻辑之后再手动确认？
-			logger.info("receiveStringFromQueue队列消费到消息.....{}", msg);
+			logger.info("receiveFromQueue队列消费到消息.....{}", msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("--------------------{}--------------------", message.getMessageProperties().getDeliveryTag());

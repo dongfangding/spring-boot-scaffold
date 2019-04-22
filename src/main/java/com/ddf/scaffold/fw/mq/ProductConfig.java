@@ -10,6 +10,9 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author DDf on 2019/4/21
  */
@@ -18,7 +21,7 @@ public class ProductConfig implements RabbitTemplate.ConfirmCallback {
 
 	private static final Logger logger = LoggerFactory.getLogger(ProductConfig.class);
 
-	public static final String HELLO_QUEUE = "helloQueue";
+	public static final String HELLO_QUEUE = "HELLO_QUEUE";
 
 	public static final String FANOUT_QUEUE = "FANOUT_QUEUE";
 
@@ -35,7 +38,21 @@ public class ProductConfig implements RabbitTemplate.ConfirmCallback {
 	 */
 	@Bean
 	public Queue helloQueue() {
-		return new Queue(HELLO_QUEUE);
+		Map<String, Object> args = new HashMap<>(2);
+		/**
+		 * x-dead-letter-exchange    声明  死信交换机
+		 * 消息被拒绝（basic.reject/ basic.nack）并且不再重新投递 requeue=false
+		 * 消息超期 (rabbitmq  Time-To-Live -> messageProperties.setExpiration())
+		 * 队列超载
+		 * 以上三种情况如果在该队列中出现的话，那么会将消息通过定义的死信交换器来路由到指定的队列中，
+		 * 死信队列的应用方式通常可以为
+		 * 1. 做延时处理，定义为死信队列的queue不要定义消费方，而是等消息变死信后，消费转发后的队列
+		 * 2. 死信队列正常消费，在开启了手动ack功能的时候由于某些消息不能重复投递，可以通过死信队列将无法消费的消息转发到一个指定交换器的队列中来保存，后续针对无法
+		 *    正常消费的消息可以消费转发后的queue来处理
+		 */
+		// 该队列定位为死信队列，将满足死信的消息转发到私信交换器中
+		args.put("x-dead-letter-exchange", EXCHANGE_DEAD);
+		return new Queue(HELLO_QUEUE, true, false, false, args);
 	}
 
 	/**
@@ -126,12 +143,13 @@ public class ProductConfig implements RabbitTemplate.ConfirmCallback {
 	 * @return
 	 */
 	@Bean
-	public DirectExchange deadExchange() {
-		return new DirectExchange(EXCHANGE_DEAD);
+	public FanoutExchange deadExchange() {
+		return new FanoutExchange(EXCHANGE_DEAD);
 	}
 
 	@Bean
 	public Binding deadQueueExchange() {
-		return BindingBuilder.bind(deadQueue()).to(deadExchange()).with(DEAD_QUEUE);
+		return BindingBuilder.bind(deadQueue()).to(deadExchange());
 	}
+
 }

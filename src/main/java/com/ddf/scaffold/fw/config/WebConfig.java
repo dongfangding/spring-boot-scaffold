@@ -122,7 +122,7 @@ public class WebConfig implements WebMvcConfigurer {
 		threadPoolTaskExecutor.setCorePoolSize(Runtime.getRuntime().availableProcessors());
 		threadPoolTaskExecutor.setMaxPoolSize(Runtime.getRuntime().availableProcessors() * 2 + 1);
 		threadPoolTaskExecutor.setKeepAliveSeconds(0);
-		threadPoolTaskExecutor.setQueueCapacity(1000);
+		threadPoolTaskExecutor.setQueueCapacity(100000);
 		return threadPoolTaskExecutor;
 	}
 
