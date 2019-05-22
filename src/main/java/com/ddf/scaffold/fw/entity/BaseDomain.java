@@ -1,5 +1,8 @@
 package com.ddf.scaffold.fw.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.ddf.scaffold.fw.jpa.AuditorAwareImpl;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,27 +34,33 @@ public class BaseDomain {
 
     @CreatedBy
     @Column(name = "CREATE_BY")
+    @TableField(value = "CREATE_BY", fill = FieldFill.INSERT)
     protected String createBy;
 
     @CreatedDate
     @Column(name = "CREATE_TIME")
     @Temporal(TemporalType.TIMESTAMP)
+    @TableField(value = "CREATE_TIME", fill = FieldFill.INSERT)
     protected Date createTime;
 
     @LastModifiedBy
     @Column(name = "MODIFY_BY")
+    @TableField(value = "MODIFY_BY", fill = FieldFill.UPDATE)
     protected String modifyBy;
 
     @LastModifiedDate
     @Column(name = "MODIFY_TIME")
     @Temporal(TemporalType.TIMESTAMP)
+    @TableField(value = "MODIFY_TIME", fill = FieldFill.UPDATE)
     protected Date modifyTime;
 
     @Column(name = "REMOVED")
+    @TableLogic
     protected Integer removed = 0;
 
     @Column(name = "VERSION")
     @Version
+    @com.baomidou.mybatisplus.annotation.Version
     protected Integer version;
 
 }

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.function.Consumer;
+
 /**
  *
  * 接口如果太慢的话，提供一个回调接口，由使用方自己去实现自己的处理机制
@@ -20,6 +22,16 @@ public interface SlowEventAction {
      * @param slowEvent
      */
     void doAction(SlowEvent slowEvent);
+
+    /**
+     * 提供一个静态方法来完成回调功能
+     *
+     * @param slowEven
+     * @param consumer
+     */
+    static void doAction(SlowEvent slowEven, Consumer<SlowEvent> consumer) {
+        consumer.accept(slowEven);
+    }
 
 
     /**

@@ -1,0 +1,28 @@
+DROP TABLE IF EXISTS user;
+
+CREATE TABLE user
+(
+	id BIGINT(20) NOT NULL COMMENT '主键ID',
+	USER_NAME VARCHAR(30) NULL DEFAULT NULL COMMENT '姓名',
+	PASSWORD VARCHAR(32) NULL DEFAULT NULL COMMENT '密码',
+	EMAIL VARCHAR(50) NULL DEFAULT NULL COMMENT '邮箱',
+	BIRTHDAY DATE NOT NULL COMMENT '生日',
+
+	CREATE_BY VARCHAR(32) NULL,
+	CREATE_TIME TIMESTAMP NULL,
+	MODIFY_BY VARCHAR(32) NULL,
+	MODIFY_TIME TIMESTAMP NULL,
+	REMOVED INT NOT NULL DEFAULT 0,
+	VERSION INT NOT NULL DEFAULT 1,
+
+	PRIMARY KEY (id)
+
+);
+
+
+INSERT INTO user (id, user_name, password, birthday, email) VALUES
+(1, 'Jone', '123456', '1992-05-21', 'test1@baomidou.com'),
+(2, 'Jack', '123456','1987-02-21', 'test2@baomidou.com'),
+(3, 'Tom','123456', '1999-05-31', 'test3@baomidou.com'),
+(4, 'Sandy', '123456','1995-09-12', 'test4@baomidou.com'),
+(5, 'Billie', '123456','1998-07-01', 'test5@baomidou.com');

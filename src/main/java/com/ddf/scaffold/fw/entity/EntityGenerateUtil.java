@@ -197,9 +197,7 @@ public class EntityGenerateUtil {
         sbl.append("@ToString(callSuper = true)").append(LINE);
         sbl.append("@NoArgsConstructor").append(LINE);
         sbl.append("@AllArgsConstructor ").append(LINE);
-        sbl.append("@EqualsAndHashCode(callSuper = false)").append(LINE);
-        sbl.append("@Getter").append(LINE);
-        sbl.append("@Setter").append(LINE);
+        sbl.append("@Data").append(LINE);
         sbl.append("public class ").append(className).append(" extends BaseDomain {").append(LINE);
         return sbl;
     }
