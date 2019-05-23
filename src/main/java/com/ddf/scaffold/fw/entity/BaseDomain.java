@@ -1,8 +1,6 @@
 package com.ddf.scaffold.fw.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.*;
 import com.ddf.scaffold.fw.jpa.AuditorAwareImpl;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.persistence.Version;
 import java.util.Date;
 
 /**
@@ -30,6 +29,7 @@ public class BaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(insertable = false, updatable = false)
+    @TableId(type = IdType.AUTO)
     protected Long id;
 
     @CreatedBy
@@ -61,6 +61,7 @@ public class BaseDomain {
     @Column(name = "VERSION")
     @Version
     @com.baomidou.mybatisplus.annotation.Version
+    @TableField(fill = FieldFill.INSERT)
     protected Integer version;
 
 }

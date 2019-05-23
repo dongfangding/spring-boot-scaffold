@@ -1,5 +1,6 @@
 package com.ddf.scaffold.logic.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.ddf.scaffold.logic.entity.User;
 
 import javax.mail.MessagingException;
@@ -7,7 +8,7 @@ import javax.mail.MessagingException;
 /**
  * @author DDf on 2018/12/1
  */
-public interface UserService {
+public interface UserService extends IService<User> {
 	/**
 	 * 登录
 	 * @param userName 用户名

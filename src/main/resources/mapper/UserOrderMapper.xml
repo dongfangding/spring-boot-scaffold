@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ddf.scaffold.logic.mapper.UserOrderMapper">
+
+    <sql id="baseColumn">
+        ${alias}.id, ${alias}.USER_ID, ${alias}.NAME, ${alias}.NUM, ${alias}.PRICE, ${alias}.CREATE_BY, ${alias}.CREATE_TIME, ${alias}.MODIFY_BY,
+        ${alias}.MODIFY_TIME, ${alias}.VERSION
+    </sql>
+
+</mapper>

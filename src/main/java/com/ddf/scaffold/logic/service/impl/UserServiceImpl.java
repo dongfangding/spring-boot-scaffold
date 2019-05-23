@@ -1,11 +1,13 @@
 package com.ddf.scaffold.logic.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
 import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
 import com.ddf.scaffold.fw.session.SessionContext;
 import com.ddf.scaffold.fw.util.ConstUtil;
 import com.ddf.scaffold.fw.util.MailUtil;
 import com.ddf.scaffold.logic.entity.User;
+import com.ddf.scaffold.logic.mapper.UserMapper;
 import com.ddf.scaffold.logic.repository.UserRepository;
 import com.ddf.scaffold.logic.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ import java.util.Random;
  * @author DDf on 2018/12/1
  */
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;

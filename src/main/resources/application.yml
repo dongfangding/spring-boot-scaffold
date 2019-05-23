@@ -78,10 +78,12 @@ custom:  # 自定义的属性最好都写在custom前缀下，方便辨认
     attachDir: attach
     tempDir: temp
 
-
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
+  mapper-locations: classpath:mapper/*.xml
+  #config-location: classpath:/mybatis-config.xml
+
 
 logging:
   level:

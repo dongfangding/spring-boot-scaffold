@@ -36,13 +36,13 @@ public class EntityGenerateUtil {
     private static final String TWO_LINE = (System.getProperty("line.separator") + System.getProperty("line.separator"));
 
     /** 项目源码根路径地址,根据包名生成java代码的时候需要用到需要生成到哪个目录下 */
-    private static final String SOURCE_ROOT = "D:/dev-tools/idea_root/HiDoc/src/main/java";
+    private static final String SOURCE_ROOT = System.getProperty("user.dir") + "/src/main/java";
 
     /**  需要忽略生成的字段名,如BaseDomain的字段其它表都要忽略这几个字段 */
     private static Set<String> ignoreColumn = new HashSet<>();
 
     static {
-        ignoreColumn.add("UUID");
+        ignoreColumn.add("ID");
         ignoreColumn.add("CREATE_BY");
         ignoreColumn.add("CREATE_TIME");
         ignoreColumn.add("MODIFY_BY");
@@ -51,7 +51,7 @@ public class EntityGenerateUtil {
         ignoreColumn.add("VERSION");
     }
 
-    private static final String CATLOG = "hidoc";
+    private static final String CATLOG = "boot-scaffold";
 
     /**
      * 初始化数据库连接对象
@@ -60,7 +60,7 @@ public class EntityGenerateUtil {
      */
     private static Connection getConnection() throws Exception {
         Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-        return DriverManager.getConnection("jdbc:mysql://106.14.247.46:3306/hidoc?user=hidoc&password=h1d0c");
+        return DriverManager.getConnection("jdbc:mysql://localhost:3306/boot-scaffold?user=root&password=123456&characterEncoding=utf8&useSSL=true&serverTimezone=GMT%2B8&zeroDateTimeBehavior=convertToNull");
     }
 
 
@@ -122,6 +122,7 @@ public class EntityGenerateUtil {
         sbl.append("}");
         String packageDir = packageNameToFileDir(packageName);
         new File(SOURCE_ROOT + File.separator + packageDir).mkdirs();
+        System.out.println("SOURCE_ROOT: " + SOURCE_ROOT);
         File file = new File(SOURCE_ROOT + File.separator + packageDir + File.separator + className + ".java");
         file.createNewFile();
         try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
@@ -184,13 +185,13 @@ public class EntityGenerateUtil {
     public static StringBuffer initClass(String packageName, String tableName, String className) {
         StringBuffer sbl = new StringBuffer(200);
         sbl.append("package ").append(packageName).append(";").append(TWO_LINE);
-        sbl.append("import com.hitisoft.hidoc.fw.entity.BaseDomain;").append(LINE);
+        sbl.append("import com.ddf.scaffold.fw.entity.BaseDomain;").append(LINE);
         sbl.append("import lombok.*;").append(LINE);
         sbl.append("import javax.persistence.*;").append(LINE);
         sbl.append("%s");
         sbl.append(LINE);
         sbl.append("/**").append(LINE);
-        sbl.append(" * @author {@link com.hitisoft.hidoc.fw.entity.EntityGenerateUtil}").append(" ").append(new java.util.Date()).append(LINE);
+        sbl.append(" * @author {@link com.ddf.scaffold.fw.entity.EntityGenerateUtil}").append(" ").append(new java.util.Date()).append(LINE);
         sbl.append(" */").append(LINE);
         sbl.append("@Entity").append(LINE);
         sbl.append("@Table(name = \"").append(tableName).append("\")").append(LINE);

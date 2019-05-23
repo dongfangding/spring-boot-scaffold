@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ddf.scaffold.logic.mapper.UserMapper">
+
+
+    <!-- 使用Mybatis-plus默认单表查询不需要配置XML，这个只是为了自定义查询而设置的 -->
+    <resultMap id="baseColumn" type="com.ddf.scaffold.logic.entity.User">
+        <id column="ID" property="id" />
+        <result column="USER_NAME" property="userName" />
+        <result column="PASSWORD" property="password" />
+        <result column="EMAIL" property="email" />
+        <result column="BIRTHDAY" property="birthDay" />
+        <result column="CREATE_BY" property="createBy" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="MODIFY_BY" property="modifyBy" />
+        <result column="MODIFY_TIME" property="modifyTime" />
+        <result column="REMOVED" property="removed" />
+        <result column="VERSION" property="version" />
+    </resultMap>
+
+    <!-- UserVo映射 -->
+    <resultMap id="userVO" type="com.ddf.scaffold.logic.VO.UserVO">
+        <result column="USER_NAME" property="userName" />
+        <result column="PASSWORD" property="password" />
+        <result column="EMAIL" property="email" />
+        <result column="BIRTHDAY" property="birthDay" />
+        <result column="CREATE_BY" property="createBy" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="MODIFY_BY" property="modifyBy" />
+        <result column="MODIFY_TIME" property="modifyTime" />
+        <result column="REMOVED" property="removed" />
+        <result column="VERSION" property="version" />
+
+        <!-- 映射集合 -->
+        <collection property="userOrderList" ofType="com.ddf.scaffold.logic.entity.UserOrder">
+            <id property="id" column="ORDER_ID"/>
+            <result property="name" column="ORDER_NAME" />
+            <result property="userId" column="USER_ID" />
+            <result property="num" column="ORDER_NUM" />
+            <result property="price" column="ORDER_PRICE" />
+        </collection>
+    </resultMap>
+
+    <!-- UserVo映射 -->
+    <resultMap id="userVO2" type="com.ddf.scaffold.logic.VO.UserVO2">
+        <association property="user" javaType="com.ddf.scaffold.logic.entity.User">
+            <result column="USER_NAME" property="userName" />
+            <result column="PASSWORD" property="password" />
+            <result column="EMAIL" property="email" />
+            <result column="BIRTHDAY" property="birthDay" />
+            <result column="CREATE_BY" property="createBy" />
+            <result column="CREATE_TIME" property="createTime" />
+            <result column="MODIFY_BY" property="modifyBy" />
+            <result column="MODIFY_TIME" property="modifyTime" />
+            <result column="REMOVED" property="removed" />
+            <result column="VERSION" property="version" />
+
+        </association>
+
+        <!-- 映射集合 -->
+        <collection property="userOrderList" ofType="com.ddf.scaffold.logic.entity.UserOrder">
+            <id property="id" column="ORDER_ID"/>
+            <result property="name" column="ORDER_NAME" />
+            <result property="userId" column="USER_ID" />
+            <result property="num" column="ORDER_NUM" />
+            <result property="price" column="ORDER_PRICE" />
+        </collection>
+    </resultMap>
+
+
+
+    <!-- 自定义用户表查询部分字段，使用别名字段方便多表关联时使用 -->
+    <sql id="baseColumn">
+        ${alias}.id, ${alias}.USER_NAME, ${alias}.EMAIL, ${alias}.BIRTHDAY, ${alias}.CREATE_BY, ${alias}.CREATE_TIME, ${alias}.MODIFY_BY,
+        ${alias}.MODIFY_TIME, ${alias}.VERSION
+    </sql>
+
+
+    <!-- 查询用户和订单关联的记录 -->
+    <sql id="selectVOSql">
+        SELECT
+        <include refid="baseColumn"><property name="alias" value="t1"/></include>,
+        t2.ID AS ORDER_ID, t2.USER_ID, t2.NAME AS ORDER_NAME, t2.NUM AS ORDER_NUM, t2.PRICE AS ORDER_PRICE
+        FROM USER t1 LEFT JOIN USER_ORDER t2 on t1.ID = t2.USER_ID
+    </sql>
+
+    <!-- 实体类通过继承的方式 -->
+    <select id="selectUserVO" resultMap="userVO" parameterType="long">
+        <include refid="selectVOSql" />
+        <where>
+            <if test="userId != null">
+                t1.id = #{userId}
+            </if>
+        </where>
+    </select>
+
+
+    <!-- 实体类通过组合的方式 -->
+    <select id="selectUserVO2" resultMap="userVO2" parameterType="long">
+        <include refid="selectVOSql" />
+        <where>
+            <if test="userId != null">
+                t1.id = #{userId}
+            </if>
+        </where>
+    </select>
+</mapper>

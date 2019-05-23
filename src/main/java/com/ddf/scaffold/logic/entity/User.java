@@ -11,6 +11,7 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.util.Date;
 
+
 /**
  * @author DDf on 2018/12/1
  */
@@ -22,6 +23,7 @@ import java.util.Date;
 @Data
 @TableName(value = "USER")
 public class User extends CompanyDomain {
+
     @Column(name = "USER_NAME")
     @TableField(value = "USER_NAME")
     private String userName;

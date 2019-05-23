@@ -1,5 +1,6 @@
 package com.ddf.scaffold.fw.mybatis;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
 import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
@@ -24,8 +25,14 @@ import java.util.List;
  *     </li>
  *     <li>
  *         数据库表和实体映射是通过{@code @TableName}来完成的，数据库字段和实体字段映射是用过{@code @TableField}来映射的，与JPA不同的是，
- *         数据库中不存在的字段，mybatis是通过{@code @TableField(exist = false)}来完成的；另外mybatis和数据库映射可以采用驼峰命名规则来完成默认的映射。
- *         即实体字段userName对应数据库的字段未USER_NAME, password对应的为PASSWORD
+ *         数据库中不存在的字段，mybatis是通过{@code @TableField(exist = false)}来完成的；另外mybatis和数据库映射可以采用驼峰命名规则与经典的数据库下划线
+ *         命名规则来匹配默进行映射，mybatis-plus默认开启,原生mybatis默认false,即实体字段userName对应数据库的字段未USER_NAME, password对应的为PASSWORD
+ *     </li>
+ *     <li>
+ *         mybatis-plus使用{@link com.baomidou.mybatisplus.annotation.TableId}来标识数据库主键，主键生成策略通过该注解的{@link TableId#type()}属性来指定；
+ *         需要注意的是及时设置了如自增策略{@code @TableId(type = IdType.AUTO)},数据库设计主键字段也要设计为自增；否则无效，反之数据库自增，但字段没有映射默认会是
+ *         {@link com.baomidou.mybatisplus.annotation.IdType.NONE}，测试后发现是个很大的数;
+ *         详细可用注解请<a href="https://mybatis.plus/guide/annotation.html">参考</a>
  *     </li>
  *     <li>
  *         项目中定义的继承{@link com.baomidou.mybatisplus.core.mapper.BaseMapper}的mapper，如果要注入使用，必须在配置类中通过{@code @MapperScan}注解来扫描
@@ -47,6 +54,17 @@ import java.util.List;
  *     </li>
  *     <li>
  *         <a href="https://mp.baomidou.com/guide/performance-analysis-plugin.html">性能分析插件，开发用</a>
+ *     </li>
+ *     <li>
+ *         关于mybatis-plus的结构,封装的CRUD方法，自定义的mapper需要继承{@link com.baomidou.mybatisplus.core.mapper.BaseMapper}，但其实
+ *         mybatis-plus还针对service层也做了一层接口封装，接口层继承{@link com.baomidou.mybatisplus.extension.service.IService}，实现
+ *         类继承{@link com.baomidou.mybatisplus.extension.service.impl.ServiceImpl}，这样service层不需要注入mapper也获得了CRUD的功能；
+ *         区别暂时只看到了service层的方法牵扯到对数据库的修改已经默认加了事务，所以如果是别的类想要使用另一个类的CURD方法，是注入service还是
+ *         mapper呢？
+ *     </li>
+ *     <li>
+ *         关于mapper中的方法传参，最好使用{@link org.apache.ibatis.annotations.Param}注解来标识一下参数名称，即使参数名称和方法中定义的形参名称
+ *         一样，也要加这个注解指定，在传入基本包装类型的对象时，会无法使用正确使用动态sql解析参数
  *     </li>
  * </ul>
  *
