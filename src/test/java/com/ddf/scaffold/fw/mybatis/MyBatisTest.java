@@ -1,7 +1,8 @@
 package com.ddf.scaffold.fw.mybatis;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ddf.scaffold.ApplicationTest;
 import com.ddf.scaffold.logic.VO.UserVO;
@@ -35,7 +36,7 @@ public class MyBatisTest extends ApplicationTest {
 
 
     /**
-     * mybatis的条件构造器针对的是column_name而不是filed_name，这一点一定要注意；也是用的很不爽的一点，不知道有没有办法解决；
+     * 以下写法为3.x以后的版本，可以使用lambda表达式而不是直接使用列名来硬编码
      */
     @Test
     public void testSelect() {
@@ -43,29 +44,29 @@ public class MyBatisTest extends ApplicationTest {
         List<User> users = userMapper.selectList(null);
         users.forEach(System.out::println);
 
-        // 条件构造器
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        // 条件构造器，3.x以后的版本可以支持lamda表达式，避免直接使用表名硬编码，
+        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(User::getRemoved, 0);
 
         // where and 查询
-        queryWrapper.eq("removed", 0);
-        queryWrapper.likeLeft("email", "test");
+        queryWrapper.likeLeft(User::getEmail, "test");
         List<User> users1 = userMapper.selectList(queryWrapper);
         System.out.println("users1 = " + users1);
 
         // and 和 or 混合查询
-        queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("removed", 0).likeLeft("email", "test").or().like("user_name", "J").isNotNull("user_name");
+        queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(User::getRemoved, 0).likeLeft(User::getEmail, "test").or().like(User::getUserName, "J").isNotNull(User::getUserName);
         List<User> users2 = userMapper.selectList(queryWrapper);
         System.out.println("users2 = " + users2);
 
         // and 和嵌套or 查询
-        queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("removed", Arrays.asList(0, 1, 2, 3)).ge("version", 0).and(userQueryWrapper -> userQueryWrapper.likeLeft("email", "test").or().likeLeft("user_name", "J"));
+        queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.in(User::getRemoved, Arrays.asList(0, 1, 2, 3)).ge(User::getVersion, 0).and(userQueryWrapper -> userQueryWrapper.likeLeft(User::getEmail, "test").or().likeLeft(User::getUserName, "J"));
         List<User> users3 = userMapper.selectList(queryWrapper);
         System.out.println("users3 = " + users3);
 
         // order by 排序
-        queryWrapper.orderByDesc("id").orderByAsc("user_name");
+        queryWrapper.orderByDesc(User::getId).orderByAsc(User::getUserName);
         List<User> users4 = userMapper.selectList(queryWrapper);
         System.out.println("users4 = " + users4);
     }
@@ -81,10 +82,10 @@ public class MyBatisTest extends ApplicationTest {
         userMapper.insert(user);
         log.info("insert user, id = {}", user.getId());
 
-        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        LambdaUpdateWrapper<User> updateWrapper = Wrappers.lambdaUpdate();
 
         // UPDATE USER SET user_name=? WHERE id = ?
-        updateWrapper.set("user_name", user.getUserName() + new Random().nextInt(1000)).eq("id", user.getId());
+        updateWrapper.set(User::getUserName, user.getUserName() + new Random().nextInt(1000)).eq(User::getId, user.getId());
         userMapper.update(null, updateWrapper);
         // 等同于以下写法,注意看源码的注释，第一个参数是决定要修改哪些字段，是决定set部分，有哪些属性哪些都会被set,所以如果直接使用查出来的对象修改，
         // 那就是全字段更新了，第二个参数决定where部分，感觉通过这种方式可以不用直接写数据库字段，会好一些
@@ -97,8 +98,8 @@ public class MyBatisTest extends ApplicationTest {
 
 
         // 启用了乐观锁注解，则更新的时候可以再where条件中带上version，必须where条件中带有version，否则乐观锁就不会生效
-        updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set("password", "123456").eq("version", user.getVersion()).eq("id", user.getId());
+        updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.set(User::getPassword, "123456").eq(User::getVersion, user.getVersion()).eq(User::getId, user.getId());
         userMapper.update(null, updateWrapper);
         // 等同于以下写法
         User versionUser = new User();

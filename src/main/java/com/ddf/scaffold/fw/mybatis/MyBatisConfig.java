@@ -2,6 +2,7 @@ package com.ddf.scaffold.fw.mybatis;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
@@ -21,7 +22,8 @@ import java.util.List;
  * 关于mybatis-plus的关键点总结
  * <ul>
  *     <li>
- *         mybatis的条件构造器针对的是column_name而不是filed_name，这一点一定要注意；也是用的很不爽的一点，不知道有没有办法解决；
+ *         mybatis 3.x版本之前条件构造器中都是直接使用数据库列名来硬编码查询的，强烈推荐一定要用3.x以后的版本，可以使用lambda表达式来通过属性的
+ *         方式避免数据库字段硬编码；{@link Wrappers#lambdaQuery()} 和 {@link Wrappers#lambdaUpdate()}
  *     </li>
  *     <li>
  *         数据库表和实体映射是通过{@code @TableName}来完成的，数据库字段和实体字段映射是用过{@code @TableField}来映射的，与JPA不同的是，
@@ -72,7 +74,7 @@ import java.util.List;
  * @date 2019/5/22 17:14
  */
 @Configuration
-@MapperScan(basePackages = {"com.ddf.scaffold.logic.mapper"})
+@MapperScan(basePackages = {"com.ddf.scaffold.*.mapper"})
 public class MyBatisConfig {
 
     /**
@@ -90,7 +92,7 @@ public class MyBatisConfig {
     }
 
     /**
-     * 乐观锁支持
+     * 乐观锁支持,where条件中必须带version，否则不会生效
      * 仅支持 updateById(id) 与 update(entity, wrapper) 方法
      * @return
      */
