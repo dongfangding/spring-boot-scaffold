@@ -78,7 +78,7 @@ public class MyBatisTest extends ApplicationTest {
         user.setUserName("testUpdate");
         user.setPassword("123456");
         user.setEmail("testUpdate@163.com");
-        user.setBirthDay(new Date());
+        user.setBirthday(new Date());
         userMapper.insert(user);
         log.info("insert user, id = {}", user.getId());
 
@@ -120,7 +120,7 @@ public class MyBatisTest extends ApplicationTest {
         user.setUserName("testMapperXML" + new Random().nextInt(1000));
         user.setPassword("123456");
         user.setEmail(user.getUserName() + "@qq.com");
-        user.setBirthDay(new Date());
+        user.setBirthday(new Date());
         userMapper.insert(user);
 
         user = userMapper.selectById(user.getId());

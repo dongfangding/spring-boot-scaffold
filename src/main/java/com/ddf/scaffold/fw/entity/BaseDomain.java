@@ -2,6 +2,7 @@ package com.ddf.scaffold.fw.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.ddf.scaffold.fw.jpa.AuditorAwareImpl;
+import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;

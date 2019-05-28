@@ -108,7 +108,7 @@ public class MyBatisConfig {
      * 该插件只用于开发环境，不建议生产环境使用。
      */
     @Bean
-    @Profile({"default", "dev","test"})
+    @Profile({"default", "dev", "test"})
     public PerformanceInterceptor performanceInterceptor() {
         PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
         performanceInterceptor.setMaxTime(200);

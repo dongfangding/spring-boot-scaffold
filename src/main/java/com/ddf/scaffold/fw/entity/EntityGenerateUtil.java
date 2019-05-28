@@ -65,15 +65,25 @@ public class EntityGenerateUtil {
 
 
     public static void main(String[] args) throws Exception {
-        generateEntity();
+        generateEntity(TableType.LINE_HUMP);
     }
 
 
+
+    enum TableType {
+        /** 经典下划线表名直接转驼峰, 如user_info 对应生成实体类UserInfo */
+        LINE_HUMP,
+
+        /** 经典下划线表名，但舍弃第一个下划线前的前缀部分,如t_user_info 对应生成实体类UserInfo */
+        PREFIX_DISCARD_LINE_HUMP
+    }
+
     /**
      * 生成实体源码
+     * @param tableType
      * @throws Exception
      */
-    private static void generateEntity() throws Exception {
+    private static void generateEntity(TableType tableType) throws Exception {
         Connection conn = getConnection();
         DatabaseMetaData metaData = conn.getMetaData();
         Scanner scanner = new Scanner(System.in);
@@ -84,7 +94,12 @@ public class EntityGenerateUtil {
             tableName = scanner.nextLine();
         }
         ResultSet columns = metaData.getColumns(CATLOG, "%", tableName, "%");
-        String columnName, fieldType, remarks, fieldName;
+        ResultSet tables = metaData.getTables(CATLOG, "%", "%", new String[]{"TABLE"});
+        String tableRemarks = "", columnName, fieldType, columnRemarks, fieldName;
+        while (tables.next()) {
+            tableRemarks = tables.getString("REMARKS");
+            break;
+        }
         int columnType;
         System.out.println("请输入包名");
         String packageName = scanner.nextLine();
@@ -92,8 +107,14 @@ public class EntityGenerateUtil {
             System.out.println("输入包名不能为空,请重新输入！");
             packageName = scanner.nextLine();
         }
-        String className = lineToHump(tableName.substring(tableName.indexOf("_")));
-        StringBuffer sbl = initClass(packageName, tableName, className);
+        String className;
+        if (TableType.PREFIX_DISCARD_LINE_HUMP.equals(tableType)) {
+            className = lineToHump(tableName.substring(tableName.indexOf("_")));
+        } else {
+            className = lineToHump(tableName);
+        }
+        className = className.substring(0, 1).toUpperCase() + className.substring(1);
+        StringBuffer sbl = initClass(packageName, tableName, tableRemarks, className);
         boolean isDateImport = false;
 
         while (columns.next()) {
@@ -105,9 +126,10 @@ public class EntityGenerateUtil {
             columnType = columns.getInt("DATA_TYPE");
             fieldType = castSqlType(columnType, columnName);
 
-            remarks = columns.getString("REMARKS");
+            columnRemarks = columns.getString("REMARKS");
             sbl.append(LINE);
-            sbl.append(BLANK).append("/** ").append(remarks).append("*/").append(LINE);
+            sbl.append(BLANK).append("/** ").append(columnRemarks).append("*/").append(LINE);
+            sbl.append(BLANK).append("@ApiModelProperty(\"").append(columnRemarks).append("\")").append(LINE);
             sbl.append(BLANK).append("@Column(name = \"").append(columnName).append("\")").append(LINE);
             if (" Date ".equals(fieldType)) {
                 isDateImport = true;
@@ -174,7 +196,6 @@ public class EntityGenerateUtil {
         return sb.toString();
     }
 
-
     /**
      * 初始化包名，要导入的包、类名和通用注解等
      * @param packageName 要生成的包名
@@ -182,15 +203,18 @@ public class EntityGenerateUtil {
      * @param className 类名
      * @return
      */
-    public static StringBuffer initClass(String packageName, String tableName, String className) {
+    public static StringBuffer initClass(String packageName, String tableName, String tableRemarks, String className) {
         StringBuffer sbl = new StringBuffer(200);
         sbl.append("package ").append(packageName).append(";").append(TWO_LINE);
         sbl.append("import com.ddf.scaffold.fw.entity.BaseDomain;").append(LINE);
         sbl.append("import lombok.*;").append(LINE);
         sbl.append("import javax.persistence.*;").append(LINE);
+        sbl.append("import io.swagger.annotations.ApiModel;").append(LINE);
+        sbl.append("import io.swagger.annotations.ApiModelProperty;").append(LINE);
         sbl.append("%s");
         sbl.append(LINE);
         sbl.append("/**").append(LINE);
+        sbl.append(" * ").append(tableRemarks).append(LINE);
         sbl.append(" * @author {@link com.ddf.scaffold.fw.entity.EntityGenerateUtil}").append(" ").append(new java.util.Date()).append(LINE);
         sbl.append(" */").append(LINE);
         sbl.append("@Entity").append(LINE);
@@ -199,6 +223,7 @@ public class EntityGenerateUtil {
         sbl.append("@NoArgsConstructor").append(LINE);
         sbl.append("@AllArgsConstructor ").append(LINE);
         sbl.append("@Data").append(LINE);
+        sbl.append("@ApiModel(\"").append(tableRemarks).append("\")").append(LINE);
         sbl.append("public class ").append(className).append(" extends BaseDomain {").append(LINE);
         return sbl;
     }

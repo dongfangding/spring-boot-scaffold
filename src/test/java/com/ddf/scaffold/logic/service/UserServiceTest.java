@@ -26,7 +26,7 @@ public class UserServiceTest extends ApplicationTest {
 		user.setUserName("testRegistry" + UUID.randomUUID().toString().substring(8));
 		user.setPassword("123456");
 		user.setEmail("testRegistry@qq.com" + UUID.randomUUID().toString().substring(8));
-		user.setBirthDay(new Date());
+		user.setBirthday(new Date());
 		User newUser = userService.registry(user);
 		Assert.notNull(newUser, "注册成功");
 	}
