@@ -1,8 +1,10 @@
 package com.ddf.scaffold.fw.mybatis;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.core.injector.ISqlInjector;
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.injector.LogicSqlInjector;
 import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
@@ -76,6 +78,17 @@ import java.util.List;
 @Configuration
 @MapperScan(basePackages = {"com.ddf.scaffold.*.mapper"})
 public class MyBatisConfig {
+
+
+    /**
+     * 3.1.1版本存在父子关系的实体类使用lambda查询表达式会存在不能识别列名的问题，测试用例却不存在。回退版本，
+     * 如果需要逻辑删除，3.1.1版本之前都需要注入该组件
+     * @return
+     */
+    @Bean
+    public ISqlInjector sqlInjector() {
+        return new LogicSqlInjector();
+    }
 
     /**
      * 分页与攻击 SQL 阻断解析器
