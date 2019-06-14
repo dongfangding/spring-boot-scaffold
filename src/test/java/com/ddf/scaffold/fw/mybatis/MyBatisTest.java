@@ -14,6 +14,7 @@ import com.ddf.scaffold.logic.mapper.UserOrderMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -27,6 +28,7 @@ import java.util.Random;
  * @date 2019/5/21 9:54
  */
 @Slf4j
+@Transactional
 public class MyBatisTest extends ApplicationTest {
 
     @Autowired
@@ -84,11 +86,11 @@ public class MyBatisTest extends ApplicationTest {
 
         LambdaUpdateWrapper<User> updateWrapper = Wrappers.lambdaUpdate();
 
-        // UPDATE USER SET user_name=? WHERE id = ?
+        // UPDATE USER SET user_name=? WHERE id = ?,这种写法通用填充会失效
         updateWrapper.set(User::getUserName, user.getUserName() + new Random().nextInt(1000)).eq(User::getId, user.getId());
         userMapper.update(null, updateWrapper);
         // 等同于以下写法,注意看源码的注释，第一个参数是决定要修改哪些字段，是决定set部分，有哪些属性哪些都会被set,所以如果直接使用查出来的对象修改，
-        // 那就是全字段更新了，第二个参数决定where部分，感觉通过这种方式可以不用直接写数据库字段，会好一些
+        // 那就是全字段更新了，第二个参数决定where部分，这种写法可以出发通用字段的填充
         User setUser = new User();
         setUser.setUserName(user.getUserName() + new Random().nextInt(10));
         userMapper.update(setUser, updateWrapper);
