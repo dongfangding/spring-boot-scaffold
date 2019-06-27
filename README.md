@@ -295,31 +295,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface UserRepository extends JpaBaseDao<User, Long> {
 
-    /**
-     * 根据用户名和密码查询用户
-     * @param userName 用户名
-     * @param password 密码
-     * @return
-     */
-    User getUserByUserNameAndPassword(String userName, String password);
-
-    /**
-     * 根据用户名或邮箱查询用户是否存在
-     * @param userName 用户名
-     * @param email 邮箱
-     * @return
-     */
-    User getUserByUserNameOrEmail(String userName, String email);
-
-
-    /**
-     * 通过关键字查询可以添加的伙伴列表，不能把自己查出来
-     * @param userKey 用户关键字
-     * @param userId 用户自己的id
-     * @return
-     */
-    @Query("from User where (userName = :key or email =:key) and removed = 0 and id <> :userId")
-    List<User> searchUserForPartner(@Param("key") String userKey, @Param("userId") Long userId);
 }
 ```
 
@@ -959,63 +934,6 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
 #### 4.1 com.ddf.scaffold.fw.interceptor.LoginInterceptor
 该拦截器就实现了一个功能，用来拦截请求并判断当前`session`中是否有用户登录，如果没有登录，则责任链终止，本次访问请求不会继续往下执行而到此结束；需要说明的是这个拦截器的优先级高于本脚手架的另外一个优先级，但为了预留空间，目前该拦截器的优先级为`@Order(Ordered.HIGHEST_PRECEDENCE + 10)`，如果项目中需要添加别的拦截器，请自行处理好各个拦截器之间的优先级；
-该拦截器源码如下:
-```java
-package com.ddf.scaffold.fw.interceptor;
-
-import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
-import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
-import com.ddf.scaffold.fw.session.SessionContext;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Set;
-
-/**
- * @author DDf on 2018/12/31
- */
-@Component
-@Order(Ordered.HIGHEST_PRECEDENCE + 10)
-@ConfigurationProperties(
-        prefix = "custom.login-interceptor"
-)
-public class LoginInterceptor extends HandlerInterceptorAdapter {
-    @Getter
-    @Setter
-    private Set<String> ignoreFile;
-
-    @Autowired
-    private SessionContext sessionContext;
-
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (sessionContext.getUser() == null || sessionContext.getUser().getId() == null) {
-            String servletPath = request.getServletPath();
-            boolean isMatch = false;
-            if (ignoreFile != null && !ignoreFile.isEmpty()) {
-                for (String v : ignoreFile) {
-                    if (servletPath.equals(v) || v.startsWith(servletPath)) {
-                        isMatch = true;
-                    }
-                }
-            }
-            if (!isMatch && !"/error".equals(servletPath)) {
-                throw new GlobalCustomizeException(GlobalExceptionEnum.USER_NOT_LOGIN);
-            }
-        }
-        return true;
-    }
-
-}
-```
 
 如果有某些请求，如登录、注册等请求本身就没有登录但又不能让程序终止，那么就要对请求进行放行。该类提供了一个配置参数`ignoreFile`用来将需要放行的请求配置进去之后，一旦匹配即使没有登录，请求也会被放行；配置方式必须在`.yml`中配置，如下提供参考
 ```
@@ -1111,6 +1029,8 @@ public class SessionContext<T extends BaseDomain> extends HashMap implements Ser
 ### 10. 引入rabbit-mq
 文档待补充
 引入对rabbit-mq的支持，提供演示了几种不同交换器类型和收发消息以及死信队列；
+
+### 11. 统一响应内容消息体
 
 
 
