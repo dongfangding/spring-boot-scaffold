@@ -1031,8 +1031,26 @@ public class SessionContext<T extends BaseDomain> extends HashMap implements Ser
 引入对rabbit-mq的支持，提供演示了几种不同交换器类型和收发消息以及死信队列；
 
 ### 11. 统一响应内容消息体
+```java
+public class ResponseData<T> {
+    /** 返回状态码 */
+    private String code;
+    /** 返回消息 */
+    private String message;
+    /** 响应时间 */
+    private long timestamp;
+    /** 返回数据 */
+    private T data;
+}
+```
 
-
+### 12. TCP长连接
+* 项目启动后启动长连接服务端
+* 提供自定义报文来接收与反馈客户端传送的数据，必须满足服务端格式否则关闭对方连接
+* 监控客户端连接状态（注册、在线、离线）并入库（连接在线不一定设备在线，如果不传送设备id，对后面业务无效）
+* 针对本项目，客户端连接后必须发送自己的设备id,后面业务流程会取在线并且有设备号的连接才算有效
+* 提供对客户端的心跳检测来保证连接的可用以及清除无用连接信息
+* 服务端与客户端连接必须建立ssl连接，服务端会提供自己的公钥
 
 
 

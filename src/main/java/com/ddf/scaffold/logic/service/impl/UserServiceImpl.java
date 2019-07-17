@@ -5,6 +5,7 @@ import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
 import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
 import com.ddf.scaffold.fw.session.SessionContext;
 import com.ddf.scaffold.fw.util.ConstUtil;
+import com.ddf.scaffold.fw.util.MD5Util;
 import com.ddf.scaffold.fw.util.MailUtil;
 import com.ddf.scaffold.logic.entity.User;
 import com.ddf.scaffold.logic.mapper.UserMapper;
@@ -44,7 +45,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 	@Transactional(readOnly = true)
 	public User login(@NotNull String userName, @NotNull String password) {
 		ConstUtil.fastFailureParamMission(userName, password);
-		User user = userRepository.getUserByUserNameAndPassword(userName, password);
+		User user = userRepository.getUserByUserNameAndPassword(userName, MD5Util.encode(password));
 		if (user != null) {
 			return user;
 		}
@@ -60,6 +61,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 	@Transactional
 	public User registry(User user) {
 		if (user != null) {
+			user.setPassword(MD5Util.encode(user.getPassword()));
 			user = userRepository.save(user);
 //			try {
 //				mailUtil.sendMimeMail(new String[] {"dongfang.ding@hitisoft.com"}, "注册成功", "恭喜您注册成功");

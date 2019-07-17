@@ -77,6 +77,12 @@ custom:  # 自定义的属性最好都写在custom前缀下，方便辨认
     templateDir: templates
     attachDir: attach
     tempDir: temp
+  keepalive:
+    port: 9000
+    startSsl: true
+    heartIntervalSeconds: 30
+    startSync: true
+    syncIntervalSeconds: 10
 
 mybatis-plus:
   configuration:

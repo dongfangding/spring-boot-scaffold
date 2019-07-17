@@ -18,6 +18,7 @@
         <p6spy.version>3.8.2</p6spy.version>
         <swagger.version>2.9.2</swagger.version>
         <swagger-ui.version>2.9.2</swagger-ui.version>
+        <netty.version>4.1.37.Final</netty.version>
     </properties>
 
     <parent>
@@ -186,6 +187,11 @@
             <version>${swagger-ui.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
 
     </dependencies>
 
