@@ -18,7 +18,6 @@ public class UserToken {
         } catch (Exception e) {
             return ConstUtil.ANONYMOUS_NAME;
         }
-
     }
 
     public static JwtUser getJwtUser() {
