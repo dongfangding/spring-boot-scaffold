@@ -279,7 +279,7 @@ public class WebConfig implements WebMvcConfigurer {}
 ```java
 package com.ddf.scaffold.logic.repository;
 
-import com.ddf.scaffold.logic.entity.User;
+import User;
 import com.ddf.scaffold.fw.jpa.JpaBaseDao;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -716,7 +716,7 @@ queryParams=[{"key": "version", "op": "GE", "value": 0}]
 package com.ddf.scaffold.fw.jpa;
 
 import com.ddf.scaffold.ApplicationTest;
-import com.ddf.scaffold.logic.entity.User;
+import User;
 import com.ddf.scaffold.fw.entity.QueryParam;
 import com.ddf.scaffold.logic.repository.UserRepository;
 import org.junit.Test;

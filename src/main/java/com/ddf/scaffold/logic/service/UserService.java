@@ -1,7 +1,7 @@
 package com.ddf.scaffold.logic.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ddf.scaffold.logic.entity.User;
+import com.ddf.scaffold.logic.model.entity.User;
 
 import javax.mail.MessagingException;
 

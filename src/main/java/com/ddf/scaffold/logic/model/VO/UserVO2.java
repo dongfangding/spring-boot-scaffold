@@ -1,7 +1,7 @@
-package com.ddf.scaffold.logic.VO;
+package com.ddf.scaffold.logic.model.VO;
 
-import com.ddf.scaffold.logic.entity.User;
-import com.ddf.scaffold.logic.entity.UserOrder;
+import com.ddf.scaffold.logic.model.entity.User;
+import com.ddf.scaffold.logic.model.entity.UserOrder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

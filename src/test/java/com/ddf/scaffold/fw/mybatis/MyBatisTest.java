@@ -5,12 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ddf.scaffold.ApplicationTest;
-import com.ddf.scaffold.logic.VO.UserVO;
-import com.ddf.scaffold.logic.VO.UserVO2;
-import com.ddf.scaffold.logic.entity.User;
-import com.ddf.scaffold.logic.entity.UserOrder;
 import com.ddf.scaffold.logic.mapper.UserMapper;
 import com.ddf.scaffold.logic.mapper.UserOrderMapper;
+import com.ddf.scaffold.logic.model.VO.UserVO1;
+import com.ddf.scaffold.logic.model.VO.UserVO2;
+import com.ddf.scaffold.logic.model.entity.User;
+import com.ddf.scaffold.logic.model.entity.UserOrder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,9 +131,9 @@ public class MyBatisTest extends ApplicationTest {
         userOrderMapper.insert(new UserOrder().setUserId(user.getId()).setName("手机").setNum(1).setPrice(5444d));
 
         // 通过继承的方式来映射结果
-        List<UserVO> userVOList = userMapper.selectUserVO(user.getId());
+        List<UserVO1> userVOList = userMapper.selectUserVO(user.getId());
         if (null != userVOList && !userVOList.isEmpty()) {
-            for (UserVO userVO : userVOList) {
+            for (UserVO1 userVO : userVOList) {
                 // toString()方法故意排除了userOrderList属性，方便这里打印查看
                 log.info("user: {}", userVO);
                 log.info("userOrderList: {}", userVO.getUserOrderList());

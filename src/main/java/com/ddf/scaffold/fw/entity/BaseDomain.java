@@ -2,7 +2,6 @@ package com.ddf.scaffold.fw.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.ddf.scaffold.fw.jpa.AuditorAwareImpl;
-import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -11,8 +10,8 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
 import javax.persistence.Version;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -46,13 +45,13 @@ public class BaseDomain {
 
     @LastModifiedBy
     @Column(name = "MODIFY_BY")
-    @TableField(value = "MODIFY_BY", fill = FieldFill.UPDATE)
+    @TableField(value = "MODIFY_BY", fill = FieldFill.INSERT_UPDATE)
     protected String modifyBy;
 
     @LastModifiedDate
     @Column(name = "MODIFY_TIME")
     @Temporal(TemporalType.TIMESTAMP)
-    @TableField(value = "MODIFY_TIME", fill = FieldFill.UPDATE)
+    @TableField(value = "MODIFY_TIME", fill = FieldFill.INSERT_UPDATE)
     protected Date modifyTime;
 
     @Column(name = "REMOVED")

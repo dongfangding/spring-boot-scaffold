@@ -20,7 +20,6 @@ import java.util.Base64;
  * 而密钥默认是1024位，即1024位/8位-11=128-11=117字节。所以默认加密前的明文最大长度117字节，解密密文最大长度为128字。
  * 那么为啥两者相差11字节呢？是因为RSA加密使用到了填充模式（padding），即内容不足117字节时会自动填满，用到填充模式自然会占用一定的字节，
  * 而且这部分字节也是参与加密的。
- * 密钥长度的设置就是上面例子的第32行。可自行调整，当然非对称加密随着密钥变长，安全性上升的同时性能也会有所下降。
  * <p>
  * https://www.cnblogs.com/pcheng/p/9629621.html
  *
@@ -42,6 +41,32 @@ public class RSAUtil {
      * RSA最大解密密文大小
      */
     private static final int MAX_DECRYPT_BLOCK = 128 * (KEY_SIZE / 1024);
+
+    /**
+     * 服务端公钥
+     */
+    private static final PublicKey SERVER_PUBLIC_KEY;
+    /**
+     * 服务端私钥
+     */
+    private static final PrivateKey SERVER_PRIVATE_KEY;
+    /**
+     * 客户端公钥
+     */
+    private static final PublicKey CLIENT_PUBLIC_KEY;
+    /**
+     * 客户端私钥
+     */
+    private static final PrivateKey CLIENT_PRIVATE_KEY;
+
+    private static final String BASE_DIR = System.getProperty("user.dir") + "/src/main/resources/RSA";
+
+    static {
+        SERVER_PUBLIC_KEY = getPublicKey(readKeyByFile(BASE_DIR + "/服务端公钥2048.txt"));
+        SERVER_PRIVATE_KEY = getPrivateKey(readKeyByFile(BASE_DIR + "/服务端私钥2048.txt"));
+        CLIENT_PUBLIC_KEY = getPublicKey(readKeyByFile(BASE_DIR + "/应用公钥2048.txt"));
+        CLIENT_PRIVATE_KEY = getPrivateKey(readKeyByFile(BASE_DIR + "/应用私钥2048.txt"));
+    }
 
     /**
      * 获取密钥对
@@ -118,6 +143,24 @@ public class RSAUtil {
     }
 
     /**
+     * 服务端默认加密
+     * @param data
+     * @return
+     */
+    public static String encryptByServerPrivateKey(String data) {
+        return encrypt(data, SERVER_PRIVATE_KEY);
+    }
+
+    /**
+     * 客户端默认加密
+     * @param data
+     * @return
+     */
+    public static String encryptByClientPrivateKey(String data) {
+        return encrypt(data, CLIENT_PRIVATE_KEY);
+    }
+
+    /**
      * RSA加密，要知道私钥和公钥是相对的概念，所以可以使用私钥加密也可以使用公钥加密，
      * 加密之后只有它对应的公钥或私钥才能解密
      *
@@ -155,6 +198,43 @@ public class RSAUtil {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * 使用服务端的私钥解密
+     * @param data
+     * @return
+     */
+    public static String decryptByServerPrivateKey(String data) {
+        return decrypt(data, SERVER_PRIVATE_KEY);
+    }
+
+    /**
+     * 使用服务端的公钥解密
+     * @param data
+     * @return
+     */
+    public static String decryptByServerPublicKey(String data) {
+        return decrypt(data, SERVER_PUBLIC_KEY);
+    }
+
+    /**
+     * 使用客户端的私钥解密
+     * @param data
+     * @return
+     */
+    public static String decryptByClientPrivateKey(String data) {
+        return decrypt(data, CLIENT_PRIVATE_KEY);
+    }
+
+    /**
+     * 使用客户端的公钥解密
+     * @param data
+     * @return
+     */
+    public static String decryptByClientPublicKey(String data) {
+        return decrypt(data, CLIENT_PUBLIC_KEY);
+    }
+
 
     /**
      * RSA解密，要知道私钥和公钥是相对的概念，所以可以使用私钥加密也可以使用公钥加密，
@@ -195,6 +275,25 @@ public class RSAUtil {
     }
 
     /**
+     * 使用服务端的私钥加签
+     * @param data
+     * @return
+     */
+    public static String signByServerPrivateKey(String data) {
+        return sign(data, SERVER_PRIVATE_KEY);
+    }
+
+
+    /**
+     * 使用客户端的私钥加签
+     * @param data
+     * @return
+     */
+    public static String signByClientPrivateKey(String data) {
+        return sign(data, CLIENT_PRIVATE_KEY);
+    }
+
+    /**
      * 签名
      *
      * @param data       待签名数据
@@ -214,6 +313,21 @@ public class RSAUtil {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * 服务端使用客户端的公钥验签
+     * @return
+     */
+    public static boolean verifyByClientPublicKey(String srcData, String sign) {
+        return verify(srcData, CLIENT_PUBLIC_KEY, sign);
+    }
+
+    /**
+     * 客户端使用服务端的公钥验签
+     */
+    public static boolean verifyByServerPublicKey(String srcData, String sign) {
+        return verify(srcData, SERVER_PUBLIC_KEY, sign);
     }
 
     /**
@@ -273,7 +387,6 @@ public class RSAUtil {
         // 客户端使用使用自己的私钥对数据进行加签
         sign = sign(encryptData, clientPrivateKey);
 
-        // 所以服务端传送数据的时候是两部分，一个是加密数据一个是加签数据？
 
         // 使用自己的私钥解密
         System.out.println("===========================================");
@@ -290,5 +403,20 @@ public class RSAUtil {
         // =====如果只有一对秘钥，那么服务端使用私钥加密，客户端通过公钥解密
         encryptData = encrypt(data, serverPrivateKey);
         System.out.println("解密后的数据: " + decrypt(encryptData, serverPublicKey));
+
+
+        // ===========================服务端向客户端推送数据加签加密流程==========================
+        data = "我是一个粉刷匠";
+        // 服务端使用自己的私钥对数据进行加密
+        encryptData = encrypt(data, serverPrivateKey);
+        // 服务端使用自己的私钥对原始数据进行加签
+        sign = sign(data, serverPrivateKey);
+
+        // 客户端收到数据使用服务端的公钥进行解密
+        decryptData = decrypt(encryptData, serverPublicKey);
+        System.out.println("客户端解密结果: " + decryptData);
+        // 客户端对解密后的数据使用服务端的公钥进行加签和收到的签名sign比对是否一致
+        verify = verify(decryptData, serverPublicKey, sign);
+        System.out.println("客户端验签结果: " + verify);
     }
 }

@@ -1,6 +1,6 @@
 package com.ddf.scaffold.fw.security;
 
-import com.ddf.scaffold.logic.entity.User;
+import com.ddf.scaffold.logic.model.entity.User;
 import com.ddf.scaffold.logic.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

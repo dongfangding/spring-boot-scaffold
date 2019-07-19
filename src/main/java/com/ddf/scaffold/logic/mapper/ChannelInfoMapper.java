@@ -1,7 +1,8 @@
 package com.ddf.scaffold.logic.mapper;
 
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ddf.scaffold.logic.entity.ChannelInfo;
+import com.ddf.scaffold.logic.model.entity.ChannelInfo;
 
 /**
  * 连接信息

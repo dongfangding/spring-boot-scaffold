@@ -1,7 +1,8 @@
 package com.ddf.scaffold.logic.service;
 
+
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ddf.scaffold.logic.entity.ChannelInfo;
+import com.ddf.scaffold.logic.model.entity.ChannelInfo;
 
 import java.util.List;
 
@@ -16,4 +17,12 @@ public interface ChannelInfoService extends IService<ChannelInfo> {
      * @return
      */
     List<ChannelInfo> listOnlineValid();
+
+    /**
+     * 将所有的连接失效
+     * 如果服务端异常终止，是来不及更新所有在线的连接状态的，如果启动后这些数据都会出现问题
+     * 提供一个方法，将所有连接失效掉；让客户端重连
+     */
+    void invalidConnection();
+
 }

@@ -3,7 +3,7 @@ package com.ddf.scaffold.logic.controller;
 import com.ddf.scaffold.fw.entity.QueryParam;
 import com.ddf.scaffold.fw.session.RequestContext;
 import com.ddf.scaffold.fw.session.SessionContext;
-import com.ddf.scaffold.logic.entity.User;
+import com.ddf.scaffold.logic.model.entity.User;
 import com.ddf.scaffold.logic.repository.UserRepository;
 import com.ddf.scaffold.logic.service.UserService;
 import io.swagger.annotations.Api;

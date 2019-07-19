@@ -1,6 +1,6 @@
 package com.ddf.scaffold.fw.security;
 
-import com.ddf.scaffold.logic.entity.User;
+import com.ddf.scaffold.logic.model.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;

@@ -4,8 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ddf.scaffold.fw.util.SpringContextHolder;
-import com.ddf.scaffold.logic.entity.ChannelInfo;
 import com.ddf.scaffold.logic.mapper.ChannelInfoMapper;
+import com.ddf.scaffold.logic.model.entity.BankSms;
+import com.ddf.scaffold.logic.model.entity.ChannelInfo;
+import com.ddf.scaffold.logic.service.BankSmsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
@@ -26,6 +29,8 @@ public class ChannelStoreSyncTask implements Runnable {
     private ExecutorService executorService;
 
     private ChannelInfoMapper channelInfoMapper = SpringContextHolder.getBean(ChannelInfoMapper.class);
+
+    private BankSmsService bankSmsService = SpringContextHolder.getBean(BankSmsService.class);
 
     private Map<String, ChannelMonitor> noDeviceIdList = new ConcurrentHashMap<>();
 
@@ -54,15 +59,16 @@ public class ChannelStoreSyncTask implements Runnable {
                         ChannelMonitor channelMonitor = entry.getValue();
                         if (!channelMonitor.isSyncDone()) {
                             ChannelInfo channelInfo = ChannelInfo.build(channelMonitor);
-                            LambdaQueryWrapper<ChannelInfo> queryWrapper = Wrappers.lambdaQuery();
-                            queryWrapper.eq(ChannelInfo::getRemoteAddress, key);
-                            ChannelInfo persistence = channelInfoMapper.selectOne(queryWrapper);
                             if (channelInfo.getDeviceId() == null) {
                                 noDeviceIdList.put(key, channelMonitor);
                                 return;
                             }
+                            LambdaQueryWrapper<ChannelInfo> queryWrapper = Wrappers.lambdaQuery();
+                            queryWrapper.eq(ChannelInfo::getRemoteAddress, key);
+                            ChannelInfo persistence = channelInfoMapper.selectOne(queryWrapper);
                             noDeviceIdList.remove(key);
                             if (persistence == null) {
+                                System.out.println("========================================================");
                                 channelInfoMapper.insert(channelInfo);
                             } else {
                                 persistence.setStatus(channelInfo.getStatus());
@@ -73,11 +79,54 @@ public class ChannelStoreSyncTask implements Runnable {
                                 channelInfoMapper.update(persistence, updateWrapper);
                             }
                             channelMonitor.setSyncDone(true);
+
+                            // 持久化接收队列里的数据
+                            consumerRequestContentQueue(channelMonitor);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
+            }
+        }
+    }
+
+
+    /**
+     * 处理接收消息队列中的数据
+     * @param channelMonitor
+     */
+    private void consumerRequestContentQueue(ChannelMonitor channelMonitor) {
+        if (channelMonitor.getQueue().peek() != null) {
+            RequestContent requestContent = channelMonitor.getQueue().poll();
+            if (requestContent == null) {
+                return;
+            }
+            // 处理短信上传
+            if (RequestContent.Cmd.SMS_UPLOAD.name().equals(requestContent.getCmd())) {
+                String deviceId = requestContent.getDeviceId();
+                if (deviceId == null) {
+                    return;
+                }
+                try {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    String body = requestContent.getBody();
+                    SmsContent smsContent = objectMapper.readValue(body, SmsContent.class);
+                    BankSms bankSms = new BankSms();
+                    bankSms.setDeviceId(deviceId);
+                    bankSms.setRemoteAddress(channelMonitor.getChannel().remoteAddress().toString());
+                    bankSms.setSender(smsContent.getSender());
+                    bankSms.setReceiver(smsContent.getReceiver());
+                    bankSms.setReceiveTime(smsContent.getReceiverTime());
+                    bankSms.setContent(smsContent.getContent());
+                    bankSmsService.save(bankSms);
+                    channelMonitor.getChannel().writeAndFlush(RequestContent.responseOK(requestContent));
+                } catch (Exception e) {
+                    // 如果处理失败将消息再放回去，需要注意的是这里并不保证消息一定不丢失，如果没有返回给客户端200，
+                    // 客户端需要重新传数据
+                    channelMonitor.getQueue().offer(requestContent);
+                    log.error("消费队列异常: ", e);
+                }
             }
         }
     }

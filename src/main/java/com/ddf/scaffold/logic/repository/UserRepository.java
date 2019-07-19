@@ -2,10 +2,8 @@ package com.ddf.scaffold.logic.repository;
 
 import com.ddf.scaffold.fw.exception.CNMessage;
 import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
-import com.ddf.scaffold.logic.entity.User;
 import com.ddf.scaffold.fw.jpa.JpaBaseDao;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import com.ddf.scaffold.logic.model.entity.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

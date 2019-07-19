@@ -1,4 +1,4 @@
-package com.ddf.scaffold.logic.entity;
+package com.ddf.scaffold.logic.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ddf.scaffold.fw.entity.BaseDomain;
@@ -6,6 +6,7 @@ import com.ddf.scaffold.fw.keepalive.server.ChannelMonitor;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.Date;
 
@@ -16,7 +17,8 @@ import java.util.Date;
  * @date 2019/7/16 12:50
  */
 @Data
-@TableName(value = "yk_pay_channel_info")
+@ToString(callSuper = true)
+@TableName(value = "log_channel_info")
 @ApiModel
 public class ChannelInfo extends BaseDomain {
     @ApiModelProperty("设备id")

@@ -1,7 +1,7 @@
 package com.ddf.scaffold.logic.service;
 
 import com.ddf.scaffold.ApplicationTest;
-import com.ddf.scaffold.logic.entity.User;
+import com.ddf.scaffold.logic.model.entity.User;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;

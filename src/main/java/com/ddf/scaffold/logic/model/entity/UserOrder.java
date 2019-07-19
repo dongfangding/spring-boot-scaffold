@@ -1,4 +1,4 @@
-package com.ddf.scaffold.logic.entity;
+package com.ddf.scaffold.logic.model.entity;
 
 import com.ddf.scaffold.fw.entity.BaseDomain;
 import io.swagger.annotations.ApiModel;

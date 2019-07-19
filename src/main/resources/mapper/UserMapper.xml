@@ -19,7 +19,7 @@
     </resultMap>
 
     <!-- UserVo映射 -->
-    <resultMap id="userVO" type="com.ddf.scaffold.logic.VO.UserVO">
+    <resultMap id="userVO" type="com.ddf.scaffold.logic.model.VO.UserVO">
         <result column="USER_NAME" property="userName" />
         <result column="PASSWORD" property="password" />
         <result column="EMAIL" property="email" />
@@ -42,7 +42,7 @@
     </resultMap>
 
     <!-- UserVo映射 -->
-    <resultMap id="userVO2" type="com.ddf.scaffold.logic.VO.UserVO2">
+    <resultMap id="userVO2" type="com.ddf.scaffold.logic.model.VO.UserVO2">
         <association property="user" javaType="com.ddf.scaffold.logic.entity.User">
             <result column="USER_NAME" property="userName" />
             <result column="PASSWORD" property="password" />

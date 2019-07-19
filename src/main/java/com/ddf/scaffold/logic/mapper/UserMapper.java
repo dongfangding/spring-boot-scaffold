@@ -3,12 +3,13 @@ package com.ddf.scaffold.logic.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ddf.scaffold.logic.VO.UserVO;
-import com.ddf.scaffold.logic.VO.UserVO2;
-import com.ddf.scaffold.logic.entity.User;
+import com.ddf.scaffold.logic.model.VO.UserVO1;
+import com.ddf.scaffold.logic.model.VO.UserVO2;
+import com.ddf.scaffold.logic.model.entity.User;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+
 
 /**
  * 用户映射类
@@ -23,7 +24,7 @@ public interface UserMapper extends BaseMapper<User> {
      * @param userId
      * @return
      */
-    List<UserVO> selectUserVO(@Param("userId") Long userId);
+    List<UserVO1> selectUserVO(@Param("userId") Long userId);
 
 
     /**

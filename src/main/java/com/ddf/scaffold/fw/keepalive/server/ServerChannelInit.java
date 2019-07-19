@@ -46,7 +46,7 @@ public class ServerChannelInit extends ChannelInitializer<Channel> {
             }
 
             // 添加换行符解码器，以及自定义编解码器,客户端每次传输数据必须以"\r\n"结尾并且符合自定义解码器规则
-            pipeline.addLast(new LineBasedFrameDecoder(1024)).addLast(new RequestContentCodec())
+            pipeline.addLast(new LineBasedFrameDecoder(2048)).addLast(new RequestContentCodec(true))
                     .addLast(new ServerOutboundHandler()).addLast(new ServerInboundHandler())
                     // IdleStateHandler 将通过 IdleStateEvent 调用 userEventTriggered ，如果连接没有接收或发送数据超过90秒钟
                     .addLast(new IdleStateHandler(0, 0,

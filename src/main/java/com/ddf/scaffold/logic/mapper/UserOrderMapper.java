@@ -1,7 +1,7 @@
 package com.ddf.scaffold.logic.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ddf.scaffold.logic.entity.UserOrder;
+import com.ddf.scaffold.logic.model.entity.UserOrder;
 
 /**
  * 用户订单mapper

@@ -45,12 +45,12 @@ CREATE TABLE USER_ORDER (
 );
 
 
-drop table if exists yk_pay_channel_info;
+drop table if exists log_channel_info;
 
 /*==============================================================*/
-/* Table: yk_pay_channel_info                                   */
+/* Table: log_channel_info                                      */
 /*==============================================================*/
-create table yk_pay_channel_info
+create table log_channel_info
 (
     id                   bigint not null auto_increment,
     device_id            varchar(64) comment '设备id',
@@ -58,12 +58,40 @@ create table yk_pay_channel_info
     status               tinyint comment '连接状态 1 注册  2 在线 3 掉线',
     registry_time        datetime comment '注册时间',
     change_time          datetime comment '最后一次状态变化时间',
-    create_by            varchar(64) comment '创建人',
-    create_time          datetime comment '创建时间',
-    modify_by            varchar(64) comment '修改人',
-    modify_time          datetime comment '修改时间',
-    removed              tinyint default 0 comment '是否删除
-            0-未删除/1-已删除',
-    version              int default 0 comment '版本号',
+    create_date          datetime default CURRENT_TIMESTAMP,
+    update_date          datetime default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    create_user_id       bigint default 0,
+    update_user_id       bigint default 0,
+    is_del               tinyint default 0,
     primary key (id)
 );
+
+alter table log_channel_info comment '设备连接到服务端的连接通道信息';
+
+
+drop table if exists message_bank_sms;
+
+/*==============================================================*/
+/* Table: message_bank_sms                                      */
+/*==============================================================*/
+create table message_bank_sms
+(
+    id                   bigint not null auto_increment,
+    device_id            varchar(64) comment '短信的设备id',
+    remote_address       varchar(32) comment '设备的远程ip地址',
+    sender               varchar(5) comment '发送方号码，暂定拿5位号码验证，必须是5位，或者维护所有银行的客服号码，做一个校验；
+            与订单服务对接时，这个值也需要；
+            订单服务需要校验收件号码和设备id和金额同时满足同一个人',
+    receiver             varchar(11) comment '收件方号码',
+    receive_time         datetime comment '收件时间，以安卓设备短信时间为准',
+    content              varchar(128) comment '短信内容',
+    create_date          datetime default CURRENT_TIMESTAMP,
+    update_date          datetime default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    create_user_id       bigint default 0,
+    update_user_id       bigint default 0,
+    is_del               tinyint default 0,
+    primary key (id)
+);
+
+alter table message_bank_sms comment 'app推送给服务端的银行收款短信';
+

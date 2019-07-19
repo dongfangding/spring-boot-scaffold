@@ -23,17 +23,23 @@ public class RequestContent implements Serializable {
     /**
      * 扩展头每个键值对之间的分隔符，注意空格
      */
-    private static final String SPLIT_LINE = "; ";
+    private transient static final String SPLIT_LINE = "; ";
     /**
      * 扩展头键值对之间的分隔符，注意空格
      */
-    private static final String SPLIT_KEY_VALUE = ": ";
+    private transient static final String SPLIT_KEY_VALUE = ": ";
+
+    /**
+     * 加签字符串在扩展头的标识字段
+     */
+    private transient static final String SIGN_HEADER = "sign";
 
     /**
      * 唯一标识此次请求，一个随机数
      */
     @JsonInclude
     private String requestId;
+
     /**
      * REQUEST 请求 RESPONSE 应答
      * @see Type
@@ -89,7 +95,7 @@ public class RequestContent implements Serializable {
      * @return
      */
     public static RequestContent request(String content) {
-        return new RequestContent(UUID.randomUUID().toString(), Type.REQUEST, Cmd.ECHO, System.currentTimeMillis(), content);
+        return new RequestContent(UUID.randomUUID().toString(), Type.REQUEST, Cmd.SMS_UPLOAD, System.currentTimeMillis(), content);
     }
 
     /**
@@ -150,6 +156,38 @@ public class RequestContent implements Serializable {
         return objectMapper.writeValueAsString(requestContent);
     }
 
+    /**
+     * 将加签数据添加到扩展头中
+     * @param signStr
+     */
+    public void sign(String signStr) {
+        addExtra(SIGN_HEADER, signStr);
+    }
+
+    /**
+     * 获取扩展头中的加签数据
+     * @return
+     */
+    public String getSign() {
+        return extraMap == null ? "" : extraMap.get(SIGN_HEADER);
+    }
+
+    /**
+     * 从扩展头中获取设备头的快捷方法
+     * @return
+     */
+    public String getDeviceId() {
+        return extraMap == null ? null : extraMap.get("deviceId");
+    }
+
+
+    /**
+     * 将设备号添加到扩展头的快捷方法
+     * @param deviceId
+     */
+    public void setDeviceId(String deviceId) {
+        addExtra("deviceId", deviceId);
+    }
 
     /**
      * 根据请求数据构造响应数据
@@ -171,7 +209,7 @@ public class RequestContent implements Serializable {
     /**
      * 解析扩展字段,注意空格
      */
-    private RequestContent parseExtra() {
+    public RequestContent parseExtra() {
         if (null != extra && !"".equals(extra)) {
             try {
                 String[] keyValueArr = extra.split(SPLIT_LINE);
@@ -291,8 +329,8 @@ public class RequestContent implements Serializable {
          */
         HEART,
         /**
-         * 应答服务器
+         * 短信上传
          */
-        ECHO
+        SMS_UPLOAD
     }
 }

@@ -2,6 +2,7 @@ package com.ddf.scaffold.fw.keepalive.client;
 
 import com.ddf.scaffold.fw.keepalive.server.KeyManagerFactoryHelper;
 import com.ddf.scaffold.fw.keepalive.server.RequestContent;
+import com.ddf.scaffold.fw.keepalive.server.SmsContent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.bootstrap.Bootstrap;
@@ -12,8 +13,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -111,7 +111,7 @@ public class TCPClient {
         ExecutorService executorService = Executors.newCachedThreadPool();
 
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 1; i++) {
             executorService.execute(() -> {
                 TCPClient client = new TCPClient("localhost", 9000, executorService, true);
                 client.connect();
@@ -126,14 +126,14 @@ public class TCPClient {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    Map<String, String> contentMap = new HashMap<>();
-                    contentMap.put("from", "13185679963");
-                    contentMap.put("to", "15564325896");
-                    contentMap.put("timestamp", System.currentTimeMillis() + "");
-                    contentMap.put("content", "晚上来家吃饭晚上来家吃饭晚上来家吃饭晚");
+                    SmsContent smsContent = new SmsContent();
+                    smsContent.setSender("95588");
+                    smsContent.setReceiver("13185679963");
+                    smsContent.setReceiverTime(new Date());
+                    smsContent.setContent("晚上来家吃饭");
                     RequestContent request = null;
                     try {
-                        request = RequestContent.request(objectMapper.writeValueAsString(contentMap));
+                        request = RequestContent.request(objectMapper.writeValueAsString(smsContent));
                     } catch (JsonProcessingException e) {
                         e.printStackTrace();
                     }
@@ -148,7 +148,6 @@ public class TCPClient {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                client.close();
             });
         }
     }

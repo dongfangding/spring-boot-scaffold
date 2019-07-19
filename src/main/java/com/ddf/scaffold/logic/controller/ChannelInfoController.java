@@ -1,6 +1,6 @@
 package com.ddf.scaffold.logic.controller;
 
-import com.ddf.scaffold.logic.entity.ChannelInfo;
+import com.ddf.scaffold.logic.model.entity.ChannelInfo;
 import com.ddf.scaffold.logic.service.ChannelInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

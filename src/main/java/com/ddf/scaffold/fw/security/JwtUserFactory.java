@@ -1,7 +1,7 @@
 package com.ddf.scaffold.fw.security;
 
 
-import com.ddf.scaffold.logic.entity.User;
+import com.ddf.scaffold.logic.model.entity.User;
 
 public final class JwtUserFactory {
 
