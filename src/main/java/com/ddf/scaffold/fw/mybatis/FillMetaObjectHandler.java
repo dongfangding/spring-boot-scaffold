@@ -41,11 +41,12 @@ public class FillMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-//        if (metaObject.getOriginalObject() instanceof BaseDomain) {
+        Object mapperMethod = ((MapperMethod.ParamMap) metaObject.getOriginalObject()).get("param1");
+        if (mapperMethod instanceof BaseDomain) {
             log.info("start update fill ....");
             // 切记切记，这里是filedName，是实体属性字段名，而不是数据库列名
             setUpdateFieldValByName("modifyBy", "ddf_modify", metaObject);
             setUpdateFieldValByName("modifyTime", new Date(), metaObject);
-//        }
+        }
     }
 }
