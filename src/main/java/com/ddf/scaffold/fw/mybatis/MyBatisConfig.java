@@ -76,7 +76,7 @@ import java.util.List;
  * @date 2019/5/22 17:14
  */
 @Configuration
-@MapperScan(basePackages = {"com.ddf.scaffold.*.mapper"})
+@MapperScan(basePackages = {"com.ddf.scaffold.fw.tcp.mapper", "com.ddf.scaffold.logic.mapper"})
 public class MyBatisConfig {
 
 

@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
  * @author DDf on 2018/12/1
  */
 @SpringBootApplication
-@EntityScan("com.ddf.scaffold.logic.entity")
+@EntityScan("com.ddf.scaffold.logic.model.entity")
 @EnableLogAspect
 public class Application {
 

@@ -26,7 +26,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 
@@ -112,13 +111,14 @@ public class WebConfig implements WebMvcConfigurer {
 
 	/**
 	 * 默认线程池
+	 *
 	 * @return
 	 */
 	@Bean
 	@Primary
-	public Executor taskExecutor() {
+	public ThreadPoolTaskExecutor taskExecutor() {
 		ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-		threadPoolTaskExecutor.setThreadNamePrefix("default-thread-pool-%d");
+		threadPoolTaskExecutor.setThreadNamePrefix("default-thread-pool-");
 		threadPoolTaskExecutor.setCorePoolSize(Runtime.getRuntime().availableProcessors());
 		threadPoolTaskExecutor.setMaxPoolSize(Runtime.getRuntime().availableProcessors() * 2 + 1);
 		threadPoolTaskExecutor.setKeepAliveSeconds(0);
@@ -128,13 +128,48 @@ public class WebConfig implements WebMvcConfigurer {
 
 
 	/**
+	 * 连接通道队列处理线程池
+	 *
+	 * @return
+	 */
+	@Bean
+	public ThreadPoolTaskExecutor transferQueueExecutor() {
+		ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+		threadPoolTaskExecutor.setThreadNamePrefix("channel-transfer-queue-pool-%s");
+		threadPoolTaskExecutor.setCorePoolSize(Runtime.getRuntime().availableProcessors());
+		threadPoolTaskExecutor.setMaxPoolSize(Runtime.getRuntime().availableProcessors() * 2 + 1);
+		threadPoolTaskExecutor.setKeepAliveSeconds(60);
+		threadPoolTaskExecutor.setQueueCapacity(10000);
+		return threadPoolTaskExecutor;
+	}
+
+
+	/**
+	 * 连接通道重试线程池
+	 *
+	 * @return
+	 */
+	@Bean
+	public ThreadPoolTaskExecutor transferRetryExecutor() {
+		ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+		threadPoolTaskExecutor.setThreadNamePrefix("channel-transfer-retry-pool-%s");
+		threadPoolTaskExecutor.setCorePoolSize(Runtime.getRuntime().availableProcessors());
+		threadPoolTaskExecutor.setMaxPoolSize(Runtime.getRuntime().availableProcessors() * 2 + 1);
+		threadPoolTaskExecutor.setKeepAliveSeconds(30);
+		threadPoolTaskExecutor.setQueueCapacity(10000);
+		return threadPoolTaskExecutor;
+	}
+
+
+	/**
 	 * 定时任务调度线程池
+	 *
 	 * @return
 	 */
 	@Bean
 	@Primary
-	public Executor scheduledExecutorService() {
-		ThreadFactory namedThreadFactory = new CustomizableThreadFactory("scheduledExecutorService-%d");
+	public ScheduledThreadPoolExecutor scheduledExecutorService() {
+		ThreadFactory namedThreadFactory = new CustomizableThreadFactory("scheduledExecutorService-");
 		ScheduledThreadPoolExecutor scheduledExecutorService = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),
 				namedThreadFactory);
 		scheduledExecutorService.setMaximumPoolSize(Runtime.getRuntime().availableProcessors() * 2 + 1);

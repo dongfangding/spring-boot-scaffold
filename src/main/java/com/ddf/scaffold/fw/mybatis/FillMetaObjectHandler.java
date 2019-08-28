@@ -3,6 +3,7 @@ package com.ddf.scaffold.fw.mybatis;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.ddf.scaffold.fw.entity.BaseDomain;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 

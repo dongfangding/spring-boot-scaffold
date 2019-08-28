@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <typeAliases>
-        <typeAlias type="com.ddf.scaffold.logic.entity.User" alias="User" />
-        <typeAlias type="com.ddf.scaffold.logic.entity.UserOrder" alias="UserOrder" />
+        <typeAlias type="com.ddf.scaffold.logic.model.entity.User" alias="User" />
+        <typeAlias type="com.ddf.scaffold.logic.model.entity.UserOrder" alias="UserOrder" />
     </typeAliases>
 </configuration>

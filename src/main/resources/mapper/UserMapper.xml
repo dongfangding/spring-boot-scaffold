@@ -4,12 +4,12 @@
 
 
     <!-- 使用Mybatis-plus默认单表查询不需要配置XML，这个只是为了自定义查询而设置的 -->
-    <resultMap id="baseColumn" type="com.ddf.scaffold.logic.entity.User">
+    <resultMap id="baseColumn" type="com.ddf.scaffold.logic.model.entity.User">
         <id column="ID" property="id" />
         <result column="USER_NAME" property="userName" />
         <result column="PASSWORD" property="password" />
         <result column="EMAIL" property="email" />
-        <result column="BIRTHDAY" property="birthDay" />
+        <result column="BIRTHDAY" property="birthday" />
         <result column="CREATE_BY" property="createBy" />
         <result column="CREATE_TIME" property="createTime" />
         <result column="MODIFY_BY" property="modifyBy" />
@@ -19,11 +19,11 @@
     </resultMap>
 
     <!-- UserVo映射 -->
-    <resultMap id="userVO" type="com.ddf.scaffold.logic.model.VO.UserVO">
+    <resultMap id="userVO" type="com.ddf.scaffold.logic.model.VO.UserVO1">
         <result column="USER_NAME" property="userName" />
         <result column="PASSWORD" property="password" />
         <result column="EMAIL" property="email" />
-        <result column="BIRTHDAY" property="birthDay" />
+        <result column="BIRTHDAY" property="birthday" />
         <result column="CREATE_BY" property="createBy" />
         <result column="CREATE_TIME" property="createTime" />
         <result column="MODIFY_BY" property="modifyBy" />
@@ -32,7 +32,7 @@
         <result column="VERSION" property="version" />
 
         <!-- 映射集合 -->
-        <collection property="userOrderList" ofType="com.ddf.scaffold.logic.entity.UserOrder">
+        <collection property="userOrderList" ofType="com.ddf.scaffold.logic.model.entity.UserOrder">
             <id property="id" column="ORDER_ID"/>
             <result property="name" column="ORDER_NAME" />
             <result property="userId" column="USER_ID" />
@@ -43,11 +43,11 @@
 
     <!-- UserVo映射 -->
     <resultMap id="userVO2" type="com.ddf.scaffold.logic.model.VO.UserVO2">
-        <association property="user" javaType="com.ddf.scaffold.logic.entity.User">
+        <association property="user" javaType="com.ddf.scaffold.logic.model.entity.User">
             <result column="USER_NAME" property="userName" />
             <result column="PASSWORD" property="password" />
             <result column="EMAIL" property="email" />
-            <result column="BIRTHDAY" property="birthDay" />
+            <result column="BIRTHDAY" property="birthday" />
             <result column="CREATE_BY" property="createBy" />
             <result column="CREATE_TIME" property="createTime" />
             <result column="MODIFY_BY" property="modifyBy" />
@@ -58,7 +58,7 @@
         </association>
 
         <!-- 映射集合 -->
-        <collection property="userOrderList" ofType="com.ddf.scaffold.logic.entity.UserOrder">
+        <collection property="userOrderList" ofType="com.ddf.scaffold.logic.model.entity.UserOrder">
             <id property="id" column="ORDER_ID"/>
             <result property="name" column="ORDER_NAME" />
             <result property="userId" column="USER_ID" />
