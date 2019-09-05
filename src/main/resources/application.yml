@@ -1,6 +1,11 @@
 server:
   port: 8081
 spring:
+  jackson:
+    time-zone: GMT+8
+    default-property-inclusion: ALWAYS
+    date-format: yyyy-MM-dd HH:mm:ss
+    locale: zh_CN
   datasource:
     initialization-mode: never
     type: com.alibaba.druid.pool.DruidDataSource
