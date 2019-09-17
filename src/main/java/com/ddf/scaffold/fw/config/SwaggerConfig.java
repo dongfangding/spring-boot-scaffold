@@ -1,5 +1,6 @@
 package com.ddf.scaffold.fw.config;
 
+import com.ddf.scaffold.fw.constant.GlobalConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -27,7 +28,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.ddf.scaffold"))
+                .apis(RequestHandlerSelectors.basePackage(GlobalConstants.BASE_PACKAGE))
                 .paths(PathSelectors.any())
                 .build();
     }

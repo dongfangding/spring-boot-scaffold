@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  * <li>可能会有部分数据库类型还未做转换，如出现'暂未支持的数据类型'错误，请查看{@link #castSqlType(int, String)}</li>
  * </ul>
  *
- * @author DDf on 2019/3/1
+ * @author dongfang.ding on 2019/3/1
  */
 public class EntityGenerateUtil {
 
@@ -36,7 +36,7 @@ public class EntityGenerateUtil {
     private static final String TWO_LINE = (System.getProperty("line.separator") + System.getProperty("line.separator"));
 
     /** 项目源码根路径地址,根据包名生成java代码的时候需要用到需要生成到哪个目录下 */
-    private static final String SOURCE_ROOT = System.getProperty("user.dir") + "/src/main/java";
+    private static final String SOURCE_ROOT = System.getProperty("bootUser.dir") + "/src/main/java";
 
     /**  需要忽略生成的字段名,如BaseDomain的字段其它表都要忽略这几个字段 */
     private static Set<String> ignoreColumn = new HashSet<>();
@@ -60,7 +60,7 @@ public class EntityGenerateUtil {
      */
     private static Connection getConnection() throws Exception {
         Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/boot-scaffold?user=root&password=123456&characterEncoding=utf8&useSSL=true&serverTimezone=GMT%2B8&zeroDateTimeBehavior=convertToNull");
+        return DriverManager.getConnection("jdbc:mysql://localhost:3306/boot-scaffold?bootUser=root&password=123456&characterEncoding=utf8&useSSL=true&serverTimezone=GMT%2B8&zeroDateTimeBehavior=convertToNull");
     }
 
 

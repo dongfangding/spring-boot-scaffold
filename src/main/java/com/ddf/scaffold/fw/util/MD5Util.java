@@ -14,6 +14,9 @@ import java.security.NoSuchAlgorithmException;
 public class MD5Util {
     protected static char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
+    private static final String SALT = "abcdefghijklmnopqrstuvwxy";
+
+
     protected static MessageDigest messageDigest = null;
 
     static {
@@ -154,5 +157,14 @@ public class MD5Util {
             result.append(temp);
         }
         return result.toString();
+    }
+
+    /**
+     * MD5加盐
+     * @param string
+     * @return
+     */
+    public static String encodeSalt(String string) {
+        return encodeSalt(string, SALT);
     }
 }

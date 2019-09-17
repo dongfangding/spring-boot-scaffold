@@ -18,7 +18,7 @@ import java.lang.annotation.*;
  * </pre>
  *
  * @see AccessLogAspect
- * @author DDf on 2018/11/7
+ * @author dongfang.ding on 2018/11/7
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

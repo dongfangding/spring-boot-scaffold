@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
  *     存在疑问？是否存在线程安全问题，暂时已使用{@code ThreadLocal}来封装对象；是否耗费性能，每次调用底层方法就必须反射
  *     对变量赋值；如果一个方法中使用了两个底层方法，那么就要重复赋值与释放两次。而且还是针对的同一个对象；
  * </p>
- * @author DDf on 2019/1/17
+ * @author dongfang.ding on 2019/1/17
  */
 @Component
 //@Aspect

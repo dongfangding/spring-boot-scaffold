@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author DDf on 2019/1/18
+ * @author dongfang.ding on 2019/1/18
  */
 @Repository
 @Transactional(readOnly = true)

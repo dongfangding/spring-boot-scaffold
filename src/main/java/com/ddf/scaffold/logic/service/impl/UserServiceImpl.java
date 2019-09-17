@@ -1,20 +1,25 @@
 package com.ddf.scaffold.logic.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
 import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
-import com.ddf.scaffold.fw.session.SessionContext;
-import com.ddf.scaffold.fw.util.ConstUtil;
-import com.ddf.scaffold.fw.util.MD5Util;
-import com.ddf.scaffold.fw.util.MailUtil;
+import com.ddf.scaffold.fw.security.JwtProperties;
+import com.ddf.scaffold.fw.security.JwtUtil;
+import com.ddf.scaffold.fw.security.UserClaim;
+import com.ddf.scaffold.fw.util.*;
+import com.ddf.scaffold.logic.constant.LogicGlobalConstants;
 import com.ddf.scaffold.logic.mapper.UserMapper;
-import com.ddf.scaffold.logic.model.entity.User;
+import com.ddf.scaffold.logic.model.bo.UserRegistryBO;
+import com.ddf.scaffold.logic.model.entity.BootUser;
 import com.ddf.scaffold.logic.repository.UserRepository;
 import com.ddf.scaffold.logic.service.UserService;
+import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.mail.MessagingException;
 import javax.validation.constraints.NotNull;
@@ -23,17 +28,17 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * @author DDf on 2018/12/1
+ * @author dongfang.ding on 2018/12/1
  */
 @Service
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, BootUser> implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
-	private SessionContext sessionContext;
-	@Autowired
 	private MailUtil mailUtil;
+	@Autowired
+	private JwtProperties jwtProperties;
 
 	/**
 	 * 登录
@@ -43,34 +48,52 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public User login(@NotNull String userName, @NotNull String password) {
-		ConstUtil.fastFailureParamMission(userName, password);
-		User user = userRepository.getUserByUserNameAndPassword(userName, MD5Util.encode(password));
-		if (user != null) {
-			return user;
+	public String login(@NotNull String userName, @NotNull String password) {
+		Preconditions.checkArgument(StringUtils.isNotBlank(userName), "用户名不能为空!");
+		Preconditions.checkArgument(StringUtils.isNotBlank(password), "密码不能为空!");
+		BootUser bootUser = getByUserNameAndPassword(userName, password);
+		if (bootUser == null) {
+			throw new GlobalCustomizeException(GlobalExceptionEnum.USERNAME_OR_PASSWORD_INVALID);
 		}
-		throw new GlobalCustomizeException(GlobalExceptionEnum.LOGIN_ERROR);
+		if (LogicGlobalConstants.BYTE_FALSE.equals(bootUser.getIsEnable())) {
+			throw new GlobalCustomizeException(GlobalExceptionEnum.ACCOUNT_NOT_ENABLE);
+		}
+
+		UserClaim userClaim = new UserClaim();
+		userClaim.setUserId(bootUser.getId()).setUserName(bootUser.getUserName()).setLastModifyPasswordTime(
+				// 默认注册时间
+				bootUser.getLastModifyPassword()).setCredit(WebUtil.getHost());
+		return JwtUtil.defaultJws(userClaim, jwtProperties.getExpiredMinute());
 	}
 
 	/**
 	 * 注册用户，用户名或邮箱已存在，不能注册
-	 * @param user 新增用户对象
+	 * @param userRegistryBo 新增用户对象
 	 * @return
 	 */
 	@Override
-	@Transactional
-	public User registry(User user) {
-		if (user != null) {
-			user.setPassword(MD5Util.encode(user.getPassword()));
-			user = userRepository.save(user);
-//			try {
-//				mailUtil.sendMimeMail(new String[] {"dongfang.ding@hitisoft.com"}, "注册成功", "恭喜您注册成功");
-//			} catch (MessagingException e) {
-//				e.printStackTrace();
-//			}
-			return user;
+	@Transactional(rollbackFor = Exception.class)
+	public BootUser registry(UserRegistryBO userRegistryBo) {
+		Preconditions.checkNotNull(userRegistryBo);
+		Preconditions.checkArgument(!StringUtils.isAnyBlank(userRegistryBo.getUserName(), userRegistryBo.getPassword(),
+				userRegistryBo.getEmail()), "用户名、密码、邮箱都不能为空！");
+		LambdaQueryWrapper<BootUser> queryWrapper = Wrappers.lambdaQuery();
+		queryWrapper.eq(BootUser::getUserName, userRegistryBo.getUserName());
+		if (count(queryWrapper) > 0) {
+			throw new GlobalCustomizeException(GlobalExceptionEnum.USERNAME_EXIST);
 		}
-		return null;
+		queryWrapper = Wrappers.lambdaQuery();
+		queryWrapper.eq(BootUser::getEmail, userRegistryBo.getEmail());
+		if (count(queryWrapper) > 0) {
+			throw new GlobalCustomizeException(GlobalExceptionEnum.EMAIL_HAD_REGISTERED);
+		}
+		BootUser bootUser = BeanUtil.copy(userRegistryBo, BootUser.class);
+		if (bootUser == null) {
+			throw new GlobalCustomizeException(GlobalExceptionEnum.LOGIN_ERROR);
+		}
+		bootUser.setLastModifyPassword(System.currentTimeMillis());
+		save(bootUser);
+		return bootUser;
 	}
 
 
@@ -80,7 +103,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 	 */
 	@Override
 	public void validateEmail(String email) throws MessagingException {
-		if (!StringUtils.isEmpty(email)) {
+		if (!StringUtils.isBlank(email)) {
 			Map<String, Object> propertiesMap = new HashMap<>();
 			propertiesMap.put("email", email);
 			Long aLong = userRepository.querySize(propertiesMap, null);
@@ -94,8 +117,40 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 				str.append(random.nextInt(9));
 			}
 			String content = "您本次申请注册的验证码为： " + str.toString();
-			sessionContext.put("validateEmail", str.toString());
 			mailUtil.sendMimeMail(new String[] {email}, "注册验证码", content);
 		}
+	}
+
+	/**
+	 * 根据用户名查找用户
+	 *
+	 * @param userName
+	 * @return
+	 */
+	@Override
+	public BootUser findByName(String userName) {
+		if (org.apache.commons.lang3.StringUtils.isBlank(userName)) {
+			return null;
+		}
+		LambdaQueryWrapper<BootUser> queryWrapper = Wrappers.lambdaQuery();
+		queryWrapper.eq(BootUser::getUserName, userName);
+		return getOne(queryWrapper);
+	}
+
+	/**
+	 * 根据用户名和密码查找用户
+	 *
+	 * @param userName
+	 * @param password
+	 * @return
+	 */
+	@Override
+	public BootUser getByUserNameAndPassword(@NotNull String userName, @NotNull String password) {
+		Preconditions.checkArgument(StringUtils.isNotBlank(userName), "用户名不能为空!");
+		Preconditions.checkArgument(StringUtils.isNotBlank(password), "密码不能为空!");
+		LambdaQueryWrapper<BootUser> queryWrapper = Wrappers.lambdaQuery();
+		queryWrapper.eq(BootUser::getUserName, userName);
+		queryWrapper.eq(BootUser::getPassword, MD5Util.encodeSalt(password));
+		return getOne(queryWrapper);
 	}
 }

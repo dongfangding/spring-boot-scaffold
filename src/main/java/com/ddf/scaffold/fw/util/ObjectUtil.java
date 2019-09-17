@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 /**
  * Object工具类
- * @author honglin.jiang
+ *
  * @create 2019年07月24日
  */
 public class ObjectUtil {
@@ -19,7 +19,7 @@ public class ObjectUtil {
     /**
      * 对象为空
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param obj
      * @return
      */
@@ -30,7 +30,7 @@ public class ObjectUtil {
     /**
      * 对象非空
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param obj
      * @return
      */
@@ -41,7 +41,7 @@ public class ObjectUtil {
     /**
      * 对象含空
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param objects
      * @return
      */
@@ -60,7 +60,7 @@ public class ObjectUtil {
     /**
      * 对象全空
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param objects
      * @return
      */
@@ -79,7 +79,7 @@ public class ObjectUtil {
     /**
      * 对象无空
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param objects
      * @return
      */
@@ -90,7 +90,7 @@ public class ObjectUtil {
     /**
      * 字段含空
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param t
      * @param functions
      * @return
@@ -113,7 +113,7 @@ public class ObjectUtil {
     /**
      * 字段全空
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param t
      * @param functions
      * @return
@@ -134,7 +134,7 @@ public class ObjectUtil {
     /**
      * 字段无空
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param t
      * @param functions
      * @return
@@ -147,7 +147,7 @@ public class ObjectUtil {
     /**
      * 比较对象是否相等，先比较地址，再比较值
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param a
      * @param b
      * @return
@@ -164,7 +164,7 @@ public class ObjectUtil {
     /**
      * 获取对象Hash值
      * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param obj
      * @return
      */
@@ -177,7 +177,7 @@ public class ObjectUtil {
     /**
      * 获取对象Hash值
      * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param obj
      * @return
      */
@@ -187,7 +187,7 @@ public class ObjectUtil {
     /**
      * 获取intern，用于加锁
      * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param obj
      * @return
      */

@@ -7,7 +7,7 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
     locale: zh_CN
   datasource:
-    initialization-mode: never
+    initialization-mode: ALWAYS
     type: com.alibaba.druid.pool.DruidDataSource
     druidProperties:
       username: root
@@ -69,7 +69,7 @@ spring:
         default-requeue-rejected: false
 
 
-custom:  # 自定义的属性最好都写在custom前缀下，方便辨认
+customs:  # 自定义的属性最好都写在custom前缀下，方便辨认
   global-config:
     anonymousName: SYSTEM
     initPassword: 123456
@@ -90,11 +90,32 @@ custom:  # 自定义的属性最好都写在custom前缀下，方便辨认
     serverStartListener: defaultServerStartListener
     retryCron: 0 0/2 * * * ?
 
+  jwt:
+    enable: true
+    refreshTokenMinute: 5
+    expiredMinute: 30
+    permitAllIgnores:
+      - path: /*.html
+      - path: /**/*.html
+      - path: /**/*.css
+      - path: /**/*.js
+      - path: /swagger-ui.html
+      - path: /swagger-resources/**
+      - path: /webjars/**
+      - path: /*/api-docs
+      - path: /druid/**
+      - httpMethod: OPTIONS
+        path: /**
+      - httpMethod: POST
+        path: /user/registry
+      - httpMethod: POST
+        path: /user/registry
+
+
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
   mapper-locations: classpath:mapper/*.xml
-  #config-location: classpath:/mybatis-config.xml
 
 
 logging:

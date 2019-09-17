@@ -1,6 +1,6 @@
 package com.ddf.scaffold.logic.model.VO;
 
-import com.ddf.scaffold.logic.model.entity.User;
+import com.ddf.scaffold.logic.model.entity.BootUser;
 import com.ddf.scaffold.logic.model.entity.UserOrder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,7 +20,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class UserVO2 {
 
-    private User user;
+    private BootUser bootUser;
 
     private List<UserOrder> userOrderList;
 }

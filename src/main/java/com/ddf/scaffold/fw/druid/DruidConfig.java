@@ -21,7 +21,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * @author DDf on 2019/1/21
+ * @author dongfang.ding on 2019/1/21
  */
 @ConfigurationProperties(prefix = "spring.datasource")
 @Configuration

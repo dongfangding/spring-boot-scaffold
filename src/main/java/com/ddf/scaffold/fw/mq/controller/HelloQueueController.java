@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 /**
- * @author DDf on 2019/4/21
+ * @author dongfang.ding on 2019/4/21
  */
 @RestController
 @RequestMapping("mq")

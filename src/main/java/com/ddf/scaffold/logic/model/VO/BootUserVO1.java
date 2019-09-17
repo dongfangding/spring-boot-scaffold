@@ -1,6 +1,6 @@
 package com.ddf.scaffold.logic.model.VO;
 
-import com.ddf.scaffold.logic.model.entity.User;
+import com.ddf.scaffold.logic.model.entity.BootUser;
 import com.ddf.scaffold.logic.model.entity.UserOrder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,7 +17,7 @@ import java.util.List;
 @Data
 @ToString(exclude = {"userOrderList"}, callSuper = true)
 @EqualsAndHashCode(callSuper = false)
-public class UserVO1 extends User {
+public class BootUserVO1 extends BootUser {
 
     List<UserOrder> userOrderList;
 }

@@ -4,7 +4,7 @@
 
 
     <!-- 使用Mybatis-plus默认单表查询不需要配置XML，这个只是为了自定义查询而设置的 -->
-    <resultMap id="baseColumn" type="com.ddf.scaffold.logic.model.entity.User">
+    <resultMap id="baseColumn" type="com.ddf.scaffold.logic.model.entity.BootUser">
         <id column="ID" property="id" />
         <result column="USER_NAME" property="userName" />
         <result column="PASSWORD" property="password" />
@@ -19,7 +19,7 @@
     </resultMap>
 
     <!-- UserVo映射 -->
-    <resultMap id="userVO" type="com.ddf.scaffold.logic.model.VO.UserVO1">
+    <resultMap id="userVO" type="com.ddf.scaffold.logic.model.VO.BootUserVO1">
         <result column="USER_NAME" property="userName" />
         <result column="PASSWORD" property="password" />
         <result column="EMAIL" property="email" />
@@ -43,7 +43,7 @@
 
     <!-- UserVo映射 -->
     <resultMap id="userVO2" type="com.ddf.scaffold.logic.model.VO.UserVO2">
-        <association property="user" javaType="com.ddf.scaffold.logic.model.entity.User">
+        <association property="bootUser" javaType="com.ddf.scaffold.logic.model.entity.BootUser">
             <result column="USER_NAME" property="userName" />
             <result column="PASSWORD" property="password" />
             <result column="EMAIL" property="email" />

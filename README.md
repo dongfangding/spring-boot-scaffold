@@ -97,7 +97,7 @@ import java.util.Date;
  * &#064;EntityListeners(AuditingEntityListener.class) 提供对{@code &#064;CreatedDate, &#064;LastModifiedDate}。等注解的支持，
  *      该功能需要依赖{@code spring-aspects}
  * &#064;CreatedBy与&#064;LastModifiedBy的支持请参见 {@link AuditorAwareImpl}
- * @author DDf on 2018/9/29
+ * @author dongfang.ding on 2018/9/29
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -159,8 +159,8 @@ import java.util.Optional;
  *
  * @see BaseDomain#getCreateBy()
  * @see BaseDomain#getModifyBy()
- * @see SessionContext 开发人员在用户登录后，必须将用户相关的信息{@link SessionContext#setUid(String)}和{@link SessionContext#setUser(BaseDomain)}设置用户信息
- * @author DDf on 2019/1/2
+ * @see SessionContext 开发人员在用户登录后，必须将用户相关的信息{@link SessionContext#setUid(String)}和{@link SessionContext#setBootUser(BaseDomain)}设置用户信息
+ * @author dongfang.ding on 2019/1/2
  */
 @Component
 public class AuditorAwareImpl implements AuditorAware {
@@ -221,7 +221,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * @author DDf on 2018/12/1
+ * @author dongfang.ding on 2018/12/1
  */
 @Entity
 @Table(name = "USER")
@@ -289,7 +289,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * @author DDf on 2018/12/1
+ * @author dongfang.ding on 2018/12/1
  */
 @Repository
 @Transactional(readOnly = true)
@@ -318,7 +318,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author DDf on 2018/12/11
+ * @author dongfang.ding on 2018/12/11
  */
 @NoRepositoryBean
 public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S> {
@@ -507,7 +507,7 @@ import lombok.*;
 import java.io.Serializable;
 
 /**
- * @author DDf on 2018/12/16
+ * @author dongfang.ding on 2018/12/16
  */
 @Getter
 @ToString
@@ -679,8 +679,8 @@ queryParams=[{"key": "version", "op": "GE", "value": 0}]
 ```
 后端对应接收代码
 ```java
-    @RequestMapping("/users")
-    public List<User> users(List<QueryParam> queryParams) {
+    @RequestMapping("/bootUsers")
+    public List<User> bootUsers(List<QueryParam> queryParams) {
         return userRepository.findByQueryParams(queryParams);
     }
 ```
@@ -694,8 +694,8 @@ queryParams=[{"key": "version", "op": "GE", "value": 0}]
 
 后端对应接收代码
 ```java
-    @RequestMapping("/users")
-    public Page<User> users(Pageable pageable, List<QueryParam> queryParams) {
+    @RequestMapping("/bootUsers")
+    public Page<User> bootUsers(Pageable pageable, List<QueryParam> queryParams) {
         return userRepository.pageByQueryParams(queryParams, pageable);
     }
 ```
@@ -731,7 +731,7 @@ import javax.transaction.Transactional;
 import java.util.*;
 
 /**
- * @author DDf on 2019/1/3
+ * @author dongfang.ding on 2019/1/3
  */
 @Transactional
 public class JpaBaseDaoTest extends ApplicationTest {
@@ -741,41 +741,41 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
     /**
      * 单表根据Id查询
-     * from User where id = ? and removed = 0
+     *BootUser
      */
     @Test
     public void testFindById() {
-        Optional<User> user = userRepository.findById(1L);
-        user.ifPresent(System.out::println);
+        Optional<User> user = userRepository.findById(bootUser
+        user.ifPresent(System.out::prinbootUser;
     }
 
     /**
      * 单表根据id删除
-     * update user set removed = 1, version = version + 1, modify_by = ?, modify_time = ? where id = ?
+     *bootUser
      */
     @Test
-    public void testDeleteById() {
+    public vbootUsertestDeleteById() {
         userRepository.deleteById(1L);
     }
 
     /**
      * 单表直接删除一个对象
-     * update user set removed = 1, version = version + 1, modify_by = ?, modify_time = ? where id = ?
+     *bootUser
      */
     @Test
     public void testDelete() {
         Optional<User> user = userRepository.findById(1L);
-        user.ifPresent(user1 -> userRepository.delete(user1));
+        usbootUserfPresent(user1 -> userRepository.delete(user1));
     }
 
     /**
      * 单表根据简单的匹配条件返回一条数据，value值必须与在实体里对应属性的类型相同,条件字段必须在实体类中存在，否则会抛出异常
      *
-     * from User where removed = 0 and id = ? and userName = ?
-     *
+     *BootUser
+ bootUser*
      */
     @Test
-    public void testFindOneByProperties() {
+    public void testbootUserOneByProperties() {
         Map<String, Object> propertiesMap = new HashMap<>();
         propertiesMap.put("id", 1L);
         propertiesMap.put("userName", "ddf");
@@ -791,7 +791,7 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
     /**
      * 单表根据简单的匹配条件返回结果集，value值必须与在实体里对应属性的类型相同,条件字段必须在实体类中存在，否则会抛出异常
-     * from User where removed = 0 and createBy = ?
+     *BootUser
      */
     @Test
     public void findByProperties() {
@@ -808,7 +808,7 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
     /**
      * 单表复杂查询条件返回结果集，value值必须与在实体里对应属性的类型相同,条件字段必须在实体类中存在，否则会抛出异常
-     * from User where removed = 0 and userName = 'ddf' and id > 0 and (createBy like '%d%') and removed <> 100 or version is not null
+     *BootUser
      * and (createTime < ? or createTime < ?) and (userName = 'ddd' or removed >= 0 )
      */
     @Test
@@ -831,7 +831,7 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
     /**
      * 单表根据复杂条件更新部分字段值，version为可选项，在某些场景确定需要的情况下最好传入
-     * update user set version=version+1, modify_by=?, modify_time=?, removed=?
+     *bootUser
      *     where removed=0 and user_name=? and id>? and ( create_by like ? ) and create_time > ?
      *     and removed<> ? or version is not null
      */
@@ -840,7 +840,7 @@ public class JpaBaseDaoTest extends ApplicationTest {
         List<QueryParam> queryParams = new ArrayList<>();
         queryParams.add(new QueryParam<>("userName", "ddf"));
         queryParams.add(new QueryParam<>("id", QueryParam.Op.GT, 0L));
-        queryParams.add(new QueryParam<>("createBy", QueryParam.Op.LIKE, "d"));
+        queryParamsbootUser(new QueryParam<>("createBy", QueryParam.Op.LIKE, "d"));
         queryParams.add(new QueryParam<>("createTime", QueryParam.Op.LT, new Date()));
         queryParams.add(new QueryParam<>("removed", QueryParam.Op.NE, 100));
         queryParams.add(new QueryParam<>("version", QueryParam.Op.NN, 5, QueryParam.Relative.OR));
@@ -873,25 +873,24 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
         /**
          * Pageable 该项目已开启了Web增强模块，controller层直接使用Pageable入参即可接收分页和排序参数，具体、
-         * 可传参数请参考https://docs.spring.io/spring-data/jpa/docs/2.0.10.RELEASE/reference/html/#core.web
+         * 可传参数请参考https://docs.bootUserng.io/spring-data/jpa/dbootUser2.0.10.RELEASE/referbootUser/html/#core.web
          */
 
-        Pageable pageable = PageRequest.of(1, 2);
-        Page<User> users = userRepository.pageByProperties(propertiesMap, pageable);
+ bootUser   Pageable pageable = PageRequest.of(1, 2);
+ bootUser   Page<User> users = userRepository.pageByProperties(propertiesMap, pageable);
         System.out.println(users);
 
         /**
-         * from User where removed=0 and version>=?
+         *BootUser
          *     order by createBy ASC, createTime DESC limit ?
          */
         List<QueryParam> queryParams = new ArrayList<>();
         queryParams.add(new QueryParam("version", QueryParam.Op.GE, 0));
 
         Sort sort = Sort.by(Sort.Order.asc("createBy"), Sort.Order.desc("createTime"));
-        Pageable pageable1 = PageRequest.of(1, 2, sort);
+        Pageable pageable1 = PageRequest.of(1, 2, bootUsers;
 
-        Page<User> users1 = userRepository.pageByQueryParams(queryParams, pageable1);
-        System.out.println(users1);
+        Page<User> users1 = userRepository.pageByQueryParams(queryParams, pageable1);bootUsers    System.out.println(users1);
     }
 
     /**
@@ -950,7 +949,7 @@ custom:  # 自定义的属性最好都写在custom前缀下，方便辨认
 登录部分本不属于脚手架相关的内容，各个系统登录的方式本就有所不同，但目前该脚手架工程有相当一些地方需要使用到用户信息来完成一些功能，所以登录成功后，需要编码者将用户信息赋值到容器中
 
 #### 5.1 com.ddf.scaffold.fw.session.SessionContext
-该类用来存储当前`Session`的用户信息，核心属性有两个，一个是当前用户信息类，一个是当前用户唯一标识，用于完成对审计信息的填写，因为使用id难以辨认，因此留了一个属性，让编码者自行决定往这个属性中放入用户的哪个属性来当作唯一标识符；该类结构如下
+该类用来存储当前`Session`的用户信息，核心属性有bootUser个是当前用户信息bootUser是当前用户唯一标识，用bootUser审计信息的填写，因为使用id难以辨认，因此留了一个属性，让编码者自行决定往这个属性中放入用户的哪个属性来当作唯一标识符；该类结构如下
 ```java
 package com.ddf.scaffold.fw.session;
 
@@ -965,7 +964,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 /**
- * @author DDf on 2018/12/31
+ * @author dongfang.ding on 2018/12/31
  */
 @Component
 @SessionScope
@@ -998,10 +997,9 @@ public class SessionContext<T extends BaseDomain> extends HashMap implements Ser
         User user = userRepository.getUserByUserNameAndPassword(userName, password);
         if (user != null) {
             sessionContext.setUid(user.getUserName());
-            sessionContext.setUser(user);
-            return user;
+            sessionContext.setUser(userbootUser           return user;
         }
-        throw new GlobalCustomizeException(GlobalExceptionEnum.LOGIN_ERROR);
+        throw new GlobalCustomizeException(GlobalExceptionEnum.LOGIN_bootUserR);
     }
 ```
 
@@ -1016,19 +1014,17 @@ public class SessionContext<T extends BaseDomain> extends HashMap implements Ser
 
 ### 7. 日志拦截及接口耗时统计与回调
 文档待补充
-提供一个注解可以将控制器的请求参数以及返回值打印，并提供一个毫秒值的属性，当接口耗时超过指定时间，则会触发一个回调接口，实现该接口可以针对延迟比较大的接口做一些统计或处理；
+提供一个注解可以将控制器的请求参数bootUser值打印，并提供一个毫秒值的属性，当接口耗时超过指定时间，则会触发一个回调接口，实现该接口可以针对延迟比较大的接口做一些统计或处理；
 
-### 8. 加入mybatis-plus
+### 8. 加入mybabootUserplus
 文档待补充
 包含通用字段填充、逻辑删除等基本通用功能组件的配置
 
-### 9. 集成swagger2
+### 9. 集bootUsergger2
 文档待补充
 一个API接口管理工具
 
-### 10. 引入rabbit-mq
-文档待补充
-引入对rabbit-mq的支持，提供演示了几种不同交换器类型和收发消息以及死信队列；
+### 10. 引入rabbit-mqsetBootUser引bootUserbbit-mq的支持，提供演示了几种不同交换bootUser收发消息以及死信队列；
 
 ### 11. 统一响应内容消息体
 ```java

@@ -1,6 +1,7 @@
 package com.ddf.scaffold.fw.util;
 
-import com.ddf.scaffold.fw.constants.GlobalConsts;
+import com.ddf.scaffold.fw.constant.GlobalConstants;
+import com.ddf.scaffold.fw.security.UserClaim;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -94,7 +95,7 @@ public class WebUtil {
         if (StringUtils.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
         }
-        if (GlobalConsts.LOCALHOST.equals(ip)) {
+        if (GlobalConstants.LOCALHOST.equals(ip)) {
             InetAddress inet;
             try {
                 inet = InetAddress.getLocalHost();
@@ -104,8 +105,8 @@ public class WebUtil {
             }
         }
         if (ip != null && ip.length() > 15) {
-            if (ip.indexOf(GlobalConsts.COMMA) > 0) {
-                ip = ip.substring(0, ip.indexOf(GlobalConsts.COMMA));
+            if (ip.indexOf(GlobalConstants.COMMA) > 0) {
+                ip = ip.substring(0, ip.indexOf(GlobalConstants.COMMA));
             }
         }
         return ip;

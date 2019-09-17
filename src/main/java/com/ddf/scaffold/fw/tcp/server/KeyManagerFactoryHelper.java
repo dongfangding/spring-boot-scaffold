@@ -84,7 +84,7 @@ public class KeyManagerFactoryHelper {
      * @throws Exception
      */
     public static SslContext createServerContext(String caPath, String caPassword) throws Exception {
-//        keyStore.load(new FileInputStream(System.getProperty("user.dir")+"/src/main/resources/cer/server.jks"), caPassword.toCharArray());
+//        keyStore.load(new FileInputStream(System.getProperty("bootUser.dir")+"/src/main/resources/cer/server.jks"), caPassword.toCharArray());
         keyStore.load(new ClassPathResource(caPath).getInputStream(), caPassword.toCharArray());
         keyManagerFactory.init(keyStore, caPassword.toCharArray());
         return SslContextBuilder.forServer(keyManagerFactory).build();
@@ -101,7 +101,7 @@ public class KeyManagerFactoryHelper {
      */
     public static SslContext createClientContext(String caPath, String caPassword) throws Exception {
         keyStore.load(new ClassPathResource(caPath).getInputStream(), caPassword.toCharArray());
-//        keyStore.load(new FileInputStream(System.getProperty("user.dir")+"/src/main/resources/cer/client.jks"), caPassword.toCharArray());
+//        keyStore.load(new FileInputStream(System.getProperty("bootUser.dir")+"/src/main/resources/cer/client.jks"), caPassword.toCharArray());
         trustManagerFactory.init(keyStore);
         return SslContextBuilder.forClient().trustManager(trustManagerFactory).build();
     }

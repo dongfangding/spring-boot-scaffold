@@ -3,7 +3,7 @@ package com.ddf.scaffold.fw.serial;
 import com.ddf.scaffold.fw.entity.PSerialRule;
 import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
 import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
-import com.ddf.scaffold.fw.security.UserToken;
+import com.ddf.scaffold.fw.security.SecurityUtils;
 import com.ddf.scaffold.fw.serial.repository.SerialNoRepository;
 import com.ddf.scaffold.fw.serial.repository.SerialRuleRepository;
 import com.ddf.scaffold.fw.util.GlobalConfig;
@@ -95,10 +95,10 @@ public class SerialFactory {
 
         List<PSerialRule> ruleList = serialRuleRepository.findByProperties(propertiesMap);
         if (ruleList == null || ruleList.isEmpty()) {
-            throw new GlobalCustomizeException(GlobalExceptionEnum.SERIAL_RULE_NOT_EXISTS, propertiesMap.get("compCode"));
+            throw new GlobalCustomizeException(GlobalExceptionEnum.SERIAL_RULE_NOT_EXISTS, propertiesMap.get("orgCode"));
         }
         if (ruleList.size() != 1) {
-            throw new GlobalCustomizeException(GlobalExceptionEnum.REPEAT_SERIAL_RULE, propertiesMap.get("compCode"),
+            throw new GlobalCustomizeException(GlobalExceptionEnum.REPEAT_SERIAL_RULE, propertiesMap.get("orgCode"),
                     propertiesMap.get("seruCode"));
         }
         PSerialRule rule = ruleList.get(0);
@@ -171,7 +171,7 @@ public class SerialFactory {
             propertyMap.put(RULE_COMP, globalConfig.getPlatformCompCode());
         } else {
             if (!propertyMap.containsKey(RULE_COMP)) {
-                propertyMap.put(RULE_COMP, UserToken.getCompCode());
+                propertyMap.put(RULE_COMP, SecurityUtils.getUserOrgCode());
             }
         }
 
@@ -198,7 +198,7 @@ public class SerialFactory {
         rule = rule.replaceAll(RULE_MONTH, strNow.substring(5, 7));
         rule = rule.replaceAll(RULE_DAY, strNow.substring(8, 10));
 
-        // company code, user code, currency code, serial no
+        // company code, bootUser code, currency code, serial no
         if (paramMap != null && !paramMap.isEmpty()) {
             for (String key : paramMap.keySet()) {
                 rule = rule.replaceAll(key, paramMap.get(key));

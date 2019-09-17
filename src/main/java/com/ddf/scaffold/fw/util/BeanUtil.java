@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * 属性拷贝工具类
  *
- * @author honglin.jiang
+ *
  * @create 2019年07月24日
  */
 public class BeanUtil {
@@ -26,7 +26,7 @@ public class BeanUtil {
      *
      * @param source
      * @return
-     * @author honglin.jiang
+     *
      * @since 2019年07月24日
      */
     @SuppressWarnings("unchecked")
@@ -43,7 +43,7 @@ public class BeanUtil {
      * @param source
      * @param target
      * @return
-     * @author honglin.jiang
+     *
      * @since 2019年07月24日
      */
     public static void copy(Object source, Object target) {
@@ -59,7 +59,7 @@ public class BeanUtil {
      * @param source
      * @param target
      * @return
-     * @author honglin.jiang
+     *
      * @since 2019年07月24日
      */
     public static <T> T copy(Object source, Class<T> target) {
@@ -74,7 +74,7 @@ public class BeanUtil {
      *
      * @param source
      * @return
-     * @author honglin.jiang
+     *
      * @since 2019年07月24日
      */
     public static <T> List<T> copy(List<T> source) {
@@ -99,7 +99,7 @@ public class BeanUtil {
      * @param source
      * @param target
      * @return
-     * @author honglin.jiang
+     *
      * @since 2019年07月24日
      */
     public static <E> List<E> copy(List<?> source, Class<E> target) {
@@ -123,7 +123,7 @@ public class BeanUtil {
      *
      * @param obj
      * @return
-     * @author honglin.jiang
+     *
      * @since 2019年07月24日
      */
     public static Map<String, Object> toMap(Object obj) {
@@ -155,7 +155,7 @@ public class BeanUtil {
      *
      * @param
      * @return
-     * @author honglin.jiang
+     *
      * @since 2019年07月24日
      */
     public static Mapper newInstance() {

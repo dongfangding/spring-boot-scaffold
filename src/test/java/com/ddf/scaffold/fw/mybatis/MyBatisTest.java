@@ -7,9 +7,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ddf.scaffold.ApplicationTest;
 import com.ddf.scaffold.logic.mapper.UserMapper;
 import com.ddf.scaffold.logic.mapper.UserOrderMapper;
-import com.ddf.scaffold.logic.model.VO.UserVO1;
+import com.ddf.scaffold.logic.model.VO.BootUserVO1;
 import com.ddf.scaffold.logic.model.VO.UserVO2;
-import com.ddf.scaffold.logic.model.entity.User;
+import com.ddf.scaffold.logic.model.entity.BootUser;
 import com.ddf.scaffold.logic.model.entity.UserOrder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -43,57 +43,57 @@ public class MyBatisTest extends ApplicationTest {
     @Test
     public void testSelect() {
         // 标准list查询
-        List<User> users = userMapper.selectList(null);
-        users.forEach(System.out::println);
+        List<BootUser> bootUsers = userMapper.selectList(null);
+        bootUsers.forEach(System.out::println);
 
         // 条件构造器，3.x以后的版本可以支持lamda表达式，避免直接使用表名硬编码，
-        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery();
-        queryWrapper.eq(User::getRemoved, 0);
+        LambdaQueryWrapper<BootUser> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(BootUser::getRemoved, 0);
 
         // where and 查询
-        queryWrapper.likeLeft(User::getEmail, "test");
-        List<User> users1 = userMapper.selectList(queryWrapper);
+        queryWrapper.likeLeft(BootUser::getEmail, "test");
+        List<BootUser> users1 = userMapper.selectList(queryWrapper);
         System.out.println("users1 = " + users1);
 
         // and 和 or 混合查询
         queryWrapper = Wrappers.lambdaQuery();
-        queryWrapper.eq(User::getRemoved, 0).likeLeft(User::getEmail, "test").or().like(User::getUserName, "J").isNotNull(User::getUserName);
-        List<User> users2 = userMapper.selectList(queryWrapper);
+        queryWrapper.eq(BootUser::getRemoved, 0).likeLeft(BootUser::getEmail, "test").or().like(BootUser::getUserName, "J").isNotNull(BootUser::getUserName);
+        List<BootUser> users2 = userMapper.selectList(queryWrapper);
         System.out.println("users2 = " + users2);
 
         // and 和嵌套or 查询
         queryWrapper = Wrappers.lambdaQuery();
-        queryWrapper.in(User::getRemoved, Arrays.asList(0, 1, 2, 3)).ge(User::getVersion, 0).and(userQueryWrapper -> userQueryWrapper.likeLeft(User::getEmail, "test").or().likeLeft(User::getUserName, "J"));
-        List<User> users3 = userMapper.selectList(queryWrapper);
+        queryWrapper.in(BootUser::getRemoved, Arrays.asList(0, 1, 2, 3)).ge(BootUser::getVersion, 0).and(userQueryWrapper -> userQueryWrapper.likeLeft(BootUser::getEmail, "test").or().likeLeft(BootUser::getUserName, "J"));
+        List<BootUser> users3 = userMapper.selectList(queryWrapper);
         System.out.println("users3 = " + users3);
 
         // order by 排序
-        queryWrapper.orderByDesc(User::getId).orderByAsc(User::getUserName);
-        List<User> users4 = userMapper.selectList(queryWrapper);
+        queryWrapper.orderByDesc(BootUser::getId).orderByAsc(BootUser::getUserName);
+        List<BootUser> users4 = userMapper.selectList(queryWrapper);
         System.out.println("users4 = " + users4);
     }
 
 
     @Test
     public void testUpdate() {
-        User user = new User();
-        user.setUserName("testUpdate");
-        user.setPassword("123456");
-        user.setEmail("testUpdate@163.com");
-        user.setBirthday(new Date());
-        userMapper.insert(user);
-        log.info("insert user, id = {}", user.getId());
+        BootUser bootUser = new BootUser();
+        bootUser.setUserName("testUpdate");
+        bootUser.setPassword("123456");
+        bootUser.setEmail("testUpdate@163.com");
+        bootUser.setBirthday(new Date());
+        userMapper.insert(bootUser);
+        log.info("insert bootUser, id = {}", bootUser.getId());
 
-        LambdaUpdateWrapper<User> updateWrapper = Wrappers.lambdaUpdate();
+        LambdaUpdateWrapper<BootUser> updateWrapper = Wrappers.lambdaUpdate();
 
         // UPDATE USER SET user_name=? WHERE id = ?,这种写法通用填充会失效
-        updateWrapper.set(User::getUserName, user.getUserName() + new Random().nextInt(1000)).eq(User::getId, user.getId());
+        updateWrapper.set(BootUser::getUserName, bootUser.getUserName() + new Random().nextInt(1000)).eq(BootUser::getId, bootUser.getId());
         userMapper.update(null, updateWrapper);
         // 等同于以下写法,注意看源码的注释，第一个参数是决定要修改哪些字段，是决定set部分，有哪些属性哪些都会被set,所以如果直接使用查出来的对象修改，
         // 那就是全字段更新了，第二个参数决定where部分，这种写法可以出发通用字段的填充
-        User setUser = new User();
-        setUser.setUserName(user.getUserName() + new Random().nextInt(10));
-        userMapper.update(setUser, updateWrapper);
+        BootUser setBootUser = new BootUser();
+        setBootUser.setUserName(bootUser.getUserName() + new Random().nextInt(10));
+        userMapper.update(setBootUser, updateWrapper);
 
         // 如果启用了逻辑删除功能，这里会使用update来代替delete
         userMapper.deleteById(100L);
@@ -101,14 +101,14 @@ public class MyBatisTest extends ApplicationTest {
 
         // 启用了乐观锁注解，则更新的时候可以再where条件中带上version，必须where条件中带有version，否则乐观锁就不会生效
         updateWrapper = Wrappers.lambdaUpdate();
-        updateWrapper.set(User::getPassword, "123456").eq(User::getVersion, user.getVersion()).eq(User::getId, user.getId());
+        updateWrapper.set(BootUser::getPassword, "123456").eq(BootUser::getVersion, bootUser.getVersion()).eq(BootUser::getId, bootUser.getId());
         userMapper.update(null, updateWrapper);
         // 等同于以下写法
-        User versionUser = new User();
-        versionUser.setId(user.getId());
-        versionUser.setVersion(user.getVersion());
-        versionUser.setPassword("123456");
-        userMapper.updateById(versionUser);
+        BootUser versionBootUser = new BootUser();
+        versionBootUser.setId(bootUser.getId());
+        versionBootUser.setVersion(bootUser.getVersion());
+        versionBootUser.setPassword("123456");
+        userMapper.updateById(versionBootUser);
     }
 
 
@@ -118,24 +118,24 @@ public class MyBatisTest extends ApplicationTest {
     @Test
     public void testMapperXML() {
         // 先造几条数据
-        User user = new User();
-        user.setUserName("testMapperXML" + new Random().nextInt(1000));
-        user.setPassword("123456");
-        user.setEmail(user.getUserName() + "@qq.com");
-        user.setBirthday(new Date());
-        userMapper.insert(user);
+        BootUser bootUser = new BootUser();
+        bootUser.setUserName("testMapperXML" + new Random().nextInt(1000));
+        bootUser.setPassword("123456");
+        bootUser.setEmail(bootUser.getUserName() + "@qq.com");
+        bootUser.setBirthday(new Date());
+        userMapper.insert(bootUser);
 
-        user = userMapper.selectById(user.getId());
+        bootUser = userMapper.selectById(bootUser.getId());
 
-        userOrderMapper.insert(new UserOrder().setUserId(user.getId()).setName("书本").setNum(1).setPrice(1000d));
-        userOrderMapper.insert(new UserOrder().setUserId(user.getId()).setName("手机").setNum(1).setPrice(5444d));
+        userOrderMapper.insert(new UserOrder().setUserId(bootUser.getId()).setName("书本").setNum(1).setPrice(1000d));
+        userOrderMapper.insert(new UserOrder().setUserId(bootUser.getId()).setName("手机").setNum(1).setPrice(5444d));
 
         // 通过继承的方式来映射结果
-        List<UserVO1> userVOList = userMapper.selectUserVO(user.getId());
+        List<BootUserVO1> userVOList = userMapper.selectUserVO(bootUser.getId());
         if (null != userVOList && !userVOList.isEmpty()) {
-            for (UserVO1 userVO : userVOList) {
+            for (BootUserVO1 userVO : userVOList) {
                 // toString()方法故意排除了userOrderList属性，方便这里打印查看
-                log.info("user: {}", userVO);
+                log.info("bootUser: {}", userVO);
                 log.info("userOrderList: {}", userVO.getUserOrderList());
             }
         }
@@ -143,11 +143,11 @@ public class MyBatisTest extends ApplicationTest {
         System.out.println("-------------------------------------------------------------------");
 
         // 通过组合的方式类映射查询结果
-        List<UserVO2> userVOList2 = userMapper.selectUserVO2(user.getId());
+        List<UserVO2> userVOList2 = userMapper.selectUserVO2(bootUser.getId());
         if (null != userVOList2 && !userVOList2.isEmpty()) {
             for (UserVO2 userVO : userVOList2) {
                 // toString()方法故意排除了userOrderList属性，方便这里打印查看
-                log.info("user: {}", userVO.getUser());
+                log.info("bootUser: {}", userVO.getBootUser());
                 log.info("userOrderList: {}", userVO.getUserOrderList());
             }
         }

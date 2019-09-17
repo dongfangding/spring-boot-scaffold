@@ -8,7 +8,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import java.util.Map;
 
 /**
- * @author DDf on 2018/11/7
+ * @author dongfang.ding on 2018/11/7
  */
 public class LogAspectRegistrar implements ImportBeanDefinitionRegistrar {
     @Override

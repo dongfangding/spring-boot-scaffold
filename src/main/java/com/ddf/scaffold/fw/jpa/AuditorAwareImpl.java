@@ -1,7 +1,7 @@
 package com.ddf.scaffold.fw.jpa;
 
 import com.ddf.scaffold.fw.entity.BaseDomain;
-import com.ddf.scaffold.fw.security.UserToken;
+import com.ddf.scaffold.fw.security.SecurityUtils;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;
 
@@ -13,13 +13,13 @@ import java.util.Optional;
  *
  * @see BaseDomain#getCreateBy()
  * @see BaseDomain#getModifyBy()
- * @author DDf on 2019/1/2
+ * @author dongfang.ding on 2019/1/2
  */
 @Component
 public class AuditorAwareImpl implements AuditorAware<String> {
 
 	@Override
 	public Optional getCurrentAuditor() {
-		return Optional.of(UserToken.getUserName());
+		return Optional.of(SecurityUtils.getUsername());
 	}
 }

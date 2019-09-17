@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author DDf on 2019/1/16
+ * @author dongfang.ding on 2019/1/16
  * 将将前端参数名称为{@link ContextKey#queryParams}的字符串值解析为List<QueryParam>，用于查询；
  * 事实上使用@RequestBody的话，SpringMvc也是可以处理的，但是为了方便多个参数一同使用GET传输，因此加了
  * 这个参数处理器，也为了尽量保留住Body，给其它更重要的数据留用

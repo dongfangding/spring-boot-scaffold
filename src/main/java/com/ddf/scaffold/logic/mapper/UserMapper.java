@@ -3,9 +3,9 @@ package com.ddf.scaffold.logic.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ddf.scaffold.logic.model.VO.UserVO1;
+import com.ddf.scaffold.logic.model.VO.BootUserVO1;
 import com.ddf.scaffold.logic.model.VO.UserVO2;
-import com.ddf.scaffold.logic.model.entity.User;
+import com.ddf.scaffold.logic.model.entity.BootUser;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -17,14 +17,14 @@ import java.util.List;
  * @author dongfang.ding
  * @date 2019/5/21 9:56
  */
-public interface UserMapper extends BaseMapper<User> {
+public interface UserMapper extends BaseMapper<BootUser> {
 
     /**
      * 关联查询USER和ORDER，使用继承的方式
      * @param userId
      * @return
      */
-    List<UserVO1> selectUserVO(@Param("userId") Long userId);
+    List<BootUserVO1> selectUserVO(@Param("userId") Long userId);
 
 
     /**

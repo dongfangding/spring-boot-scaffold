@@ -16,7 +16,7 @@ import java.util.List;
  * @date 2019/7/16 10:29
  */
 @Component
-@ConfigurationProperties(prefix = "custom.tcp")
+@ConfigurationProperties(prefix = "customs.tcp")
 @Data
 public class ServerConfig {
 

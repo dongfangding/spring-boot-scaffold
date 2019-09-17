@@ -6,7 +6,7 @@ import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
 import java.util.Locale;
 
 /**
- * @author DDf on 2018/12/1
+ * @author dongfang.ding on 2018/12/1
  */
 public class ConstUtil {
 
@@ -44,7 +44,7 @@ public class ConstUtil {
 	public static final String COMMA = ",";
 	public static final String DIR_SEP ="/";
 	public static final String Removed = "removed";
-	public static final String CompCode = "compCode";
+	public static final String CompCode = "orgCode";
 	public static final String XML = "xml";
 	public static final String JSON = "json";
 

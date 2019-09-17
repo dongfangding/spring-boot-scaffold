@@ -2,7 +2,7 @@ package com.ddf.scaffold.fw.jpa;
 
 import com.ddf.scaffold.ApplicationTest;
 import com.ddf.scaffold.fw.entity.QueryParam;
-import com.ddf.scaffold.logic.model.entity.User;
+import com.ddf.scaffold.logic.model.entity.BootUser;
 import com.ddf.scaffold.logic.repository.UserRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import javax.transaction.Transactional;
 import java.util.*;
 
 /**
- * @author DDf on 2019/1/3
+ * @author dongfang.ding on 2019/1/3
  */
 @Transactional
 public class JpaBaseDaoTest extends ApplicationTest {
@@ -25,17 +25,17 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
 	/**
 	 * 单表根据Id查询
-	 * from User where id = ? and removed = 0
+	 * from BootUser where id = ? and removed = 0
 	 */
 	@Test
 	public void testFindById() {
-		Optional<User> user = userRepository.findById(1L);
+		Optional<BootUser> user = userRepository.findById(1L);
 		user.ifPresent(System.out::println);
 	}
 
 	/**
 	 * 单表根据id删除
-	 * update user set removed = 1, version = version + 1, modify_by = ?, modify_time = ? where id = ?
+	 * update bootUser set removed = 1, version = version + 1, modify_by = ?, modify_time = ? where id = ?
 	 */
 	@Test
 	public void testDeleteById() {
@@ -44,18 +44,18 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
 	/**
 	 * 单表直接删除一个对象
-	 * update user set removed = 1, version = version + 1, modify_by = ?, modify_time = ? where id = ?
+	 * update bootUser set removed = 1, version = version + 1, modify_by = ?, modify_time = ? where id = ?
 	 */
 	@Test
 	public void testDelete() {
-		Optional<User> user = userRepository.findById(1L);
+		Optional<BootUser> user = userRepository.findById(1L);
 		user.ifPresent(user1 -> userRepository.delete(user1));
 	}
 
 	/**
 	 * 单表根据简单的匹配条件返回一条数据，value值必须与在实体里对应属性的类型相同,条件字段必须在实体类中存在，否则会抛出异常
 	 *
-	 * from User where removed = 0 and id = ? and userName = ?
+	 * from BootUser where removed = 0 and id = ? and userName = ?
 	 *
 	 */
 	@Test
@@ -75,7 +75,7 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
 	/**
 	 * 单表根据简单的匹配条件返回结果集，value值必须与在实体里对应属性的类型相同,条件字段必须在实体类中存在，否则会抛出异常
-	 * from User where removed = 0 and createBy = ?
+	 * from BootUser where removed = 0 and createBy = ?
 	 */
 	@Test
 	public void findByProperties() {
@@ -92,7 +92,7 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
 	/**
 	 * 单表复杂查询条件返回结果集，value值必须与在实体里对应属性的类型相同,条件字段必须在实体类中存在，否则会抛出异常
-	 * from User where removed = 0 and userName = 'ddf' and id > 0 and (createBy like '%d%') and removed <> 100 or version is not null
+	 * from BootUser where removed = 0 and userName = 'ddf' and id > 0 and (createBy like '%d%') and removed <> 100 or version is not null
 	 * and (createTime < ? or createTime < ?) and (userName = 'ddd' or removed >= 0 )
 	 */
 	@Test
@@ -115,7 +115,7 @@ public class JpaBaseDaoTest extends ApplicationTest {
 
 	/**
 	 * 单表根据复杂条件更新部分字段值，version为可选项，在某些场景确定需要的情况下最好传入
-	 * update user set version=version+1, modify_by=?, modify_time=?, removed=?
+	 * update bootUser set version=version+1, modify_by=?, modify_time=?, removed=?
 	 *     where removed=0 and user_name=? and id>? and ( create_by like ? ) and create_time > ?
 	 *     and removed<> ? or version is not null
 	 */
@@ -139,11 +139,11 @@ public class JpaBaseDaoTest extends ApplicationTest {
 	 */
 	@Test
 	public void testSave() {
-		User user = new User();
-		user.setId(1L);
-		user.setUserName("ddf^");
-		user.setVersion(111);
-		userRepository.save(user);
+		BootUser bootUser = new BootUser();
+		bootUser.setId(1L);
+		bootUser.setUserName("ddf^");
+		bootUser.setVersion(111);
+		userRepository.save(bootUser);
 	}
 
 
@@ -161,11 +161,11 @@ public class JpaBaseDaoTest extends ApplicationTest {
 		 */
 
 		Pageable pageable = PageRequest.of(1, 2);
-		Page<User> users = userRepository.pageByProperties(propertiesMap, pageable);
+		Page<BootUser> users = userRepository.pageByProperties(propertiesMap, pageable);
 		System.out.println(users);
 
 		/**
-		 * from User where removed=0 and version>=?
+		 * from BootUser where removed=0 and version>=?
 		 *     order by createBy ASC, createTime DESC limit ?
 		 */
 		List<QueryParam> queryParams = new ArrayList<>();
@@ -174,7 +174,7 @@ public class JpaBaseDaoTest extends ApplicationTest {
 		Sort sort = Sort.by(Sort.Order.asc("createBy"), Sort.Order.desc("createTime"));
 		Pageable pageable1 = PageRequest.of(1, 2, sort);
 
-		Page<User> users1 = userRepository.pageByQueryParams(queryParams, pageable1);
+		Page<BootUser> users1 = userRepository.pageByQueryParams(queryParams, pageable1);
 		System.out.println(users1);
 	}
 

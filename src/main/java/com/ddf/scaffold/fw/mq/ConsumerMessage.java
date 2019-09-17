@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * 如果配置了多个queues那么如何在接收消息的时候判断是从哪个queue中读取的呢，{@link com.ddf.scaffold.fw.mq.ConsumerMessage#receiveStringFromQueue(java.lang.String, org.springframework.amqp.core.Queue)}
  *
- * @author DDf on 2019/4/21
+ * @author dongfang.ding on 2019/4/21
  */
 @Component
 @RabbitListener(queues = {ProductConfig.HELLO_QUEUE, ProductConfig.FANOUT_QUEUE, ProductConfig.FANOUT_QUEUE2})

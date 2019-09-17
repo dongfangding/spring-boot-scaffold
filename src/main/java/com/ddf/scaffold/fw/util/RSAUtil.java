@@ -59,7 +59,7 @@ public class RSAUtil {
      */
     private static final PrivateKey CLIENT_PRIVATE_KEY;
 
-    private static final String BASE_DIR = System.getProperty("user.dir") + "/src/main/resources/RSA";
+    private static final String BASE_DIR = System.getProperty("bootUser.dir") + "/src/main/resources/RSA";
 
     static {
         SERVER_PUBLIC_KEY = getPublicKey(readKeyByFile(BASE_DIR + "/服务端公钥2048.txt"));
@@ -375,7 +375,7 @@ public class RSAUtil {
         System.out.println("验签结果:" + result);
 
 
-        String baseDir = System.getProperty("user.dir") + "/src/main/resources/RSA";
+        String baseDir = System.getProperty("bootUser.dir") + "/src/main/resources/RSA";
         PublicKey serverPublicKey = getPublicKey(readKeyByFile(baseDir + "/服务端公钥2048.txt"));
         PrivateKey serverPrivateKey = getPrivateKey(readKeyByFile(baseDir + "/服务端私钥2048.txt"));
         PublicKey clientPublicKey = getPublicKey(readKeyByFile(baseDir + "/应用公钥2048.txt"));

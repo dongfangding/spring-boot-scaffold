@@ -18,7 +18,7 @@ import javax.persistence.Table;
  * @author {@link com.ddf.scaffold.fw.entity.EntityGenerateUtil} Tue May 28 15:32:18 CST 2019
  */
 @Entity
-@Table(name = "USER_ORDER")
+@Table(name = "boot_user_order")
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor 

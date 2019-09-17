@@ -1,12 +1,15 @@
-DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS boot_user;
 
-CREATE TABLE user
+CREATE TABLE boot_user
 (
 	id BIGINT(20) NOT NULL COMMENT '主键ID' AUTO_INCREMENT,
-	user_name VARCHAR(30) NULL DEFAULT NULL COMMENT '姓名',
-	password VARCHAR(32) NULL DEFAULT NULL COMMENT '密码',
+	user_name VARCHAR(30) NOT NULL COMMENT '姓名',
+	password VARCHAR(32) NOT NULL COMMENT '密码',
 	email VARCHAR(50) NULL DEFAULT NULL COMMENT '邮箱',
 	birthday DATE NOT NULL COMMENT '生日',
+    last_modify_password bigint NOT NULL COMMENT '最后一次修改密码的时间',
+    is_enable TINYINT(1) NOT NULL DEFAULT 1 COMMENT '用户是否有效， 0否1是',
+    org_code VARCHAR(32) NULL COMMENT '用户所属组织代码',
 
 	create_by VARCHAR(32) NULL,
 	create_time TIMESTAMP NULL,
@@ -20,15 +23,15 @@ CREATE TABLE user
 );
 
 
-INSERT INTO user (id, user_name, password, birthday, email) VALUES
+INSERT INTO boot_user (id, user_name, password, birthday, email) VALUES
 (1, 'Jone', '123456', '1992-05-21', 'test1@baomidou.com'),
 (2, 'Jack', '123456','1987-02-21', 'test2@baomidou.com'),
 (3, 'Tom','123456', '1999-05-31', 'test3@baomidou.com'),
 (4, 'Sandy', '123456','1995-09-12', 'test4@baomidou.com'),
 (5, 'Billie', '123456','1998-07-01', 'test5@baomidou.com');
 
-
-CREATE TABLE USER_ORDER (
+drop table if exists `boot_user_order`;
+CREATE TABLE boot_user_order (
 	id BIGINT (20) NOT NULL COMMENT '主键ID' AUTO_INCREMENT,
 	user_id BIGINT (20) NOT NULL COMMENT '用户id',
 	name VARCHAR (64) COMMENT '商品名称',
@@ -45,12 +48,12 @@ CREATE TABLE USER_ORDER (
 );
 
 
-drop table if exists log_channel_info;
+drop table if exists boot_log_channel_info;
 
 /*==============================================================*/
 /* Table: log_channel_info                                      */
 /*==============================================================*/
-CREATE TABLE `base_channel_info` (
+CREATE TABLE `boot_base_channel_info` (
      `id` bigint(20) NOT NULL AUTO_INCREMENT,
      `device_no` varchar(64) NOT NULL DEFAULT '' COMMENT '设备号',
      `server_address` varchar(64) NOT NULL DEFAULT '' COMMENT '服务端地址',
@@ -69,9 +72,9 @@ CREATE TABLE `base_channel_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=373 DEFAULT CHARSET=utf8 COMMENT='设备连接到服务端的连接通道信息';
 
 
-drop table if exists `message_bank_sms`;
+drop table if exists `boot_message_bank_sms`;
 
-CREATE TABLE `message_bank_sms` (
+CREATE TABLE `boot_message_bank_sms` (
         `id` bigint(20) NOT NULL AUTO_INCREMENT,
         `device_no` varchar(64) NOT NULL COMMENT '短信的设备号',
         `message_id` varchar(64) NOT NULL COMMENT '短信的唯一标识符',
@@ -92,9 +95,9 @@ CREATE TABLE `message_bank_sms` (
         KEY `send_status_index` (`send_status`,`device_no`,`message_id`,`sender`)
 ) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8 COMMENT='app推送给服务端的银行收款短信';
 
-drop table if exists `log_channel_transfer`;
+drop table if exists `boot_log_channel_transfer`;
 
-CREATE TABLE `log_channel_transfer` (
+CREATE TABLE `boot_log_channel_transfer` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `request_id` varchar(64) NOT NULL COMMENT '请求id，用来响应和判断客户端是否重复请求',
     `device_no` varchar(64) NOT NULL DEFAULT '' COMMENT '安卓设备号',

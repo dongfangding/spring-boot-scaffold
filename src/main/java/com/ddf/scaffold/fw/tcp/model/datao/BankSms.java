@@ -18,7 +18,7 @@ import java.util.Date;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("message_bank_sms")
+@TableName("boot_message_bank_sms")
 @Data
 @ApiModel("银行收款短信记录表")
 public class BankSms extends BaseDomain {

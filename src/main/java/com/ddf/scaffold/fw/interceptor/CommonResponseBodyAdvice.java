@@ -1,16 +1,20 @@
 package com.ddf.scaffold.fw.interceptor;
 
+import com.ddf.scaffold.fw.constant.GlobalConstants;
 import com.ddf.scaffold.fw.exception.ErrorAttributesHandler;
 import com.ddf.scaffold.fw.response.ResponseData;
-import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+
+import java.lang.reflect.AnnotatedElement;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 允许在执行一个@ResponseBody 或一个ResponseEntity控制器方法之后但在使用一个主体写入正文之前自定义响应HttpMessageConverter。
@@ -18,9 +22,20 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
  * @author dongfang.ding
  * @date 2019/6/27 11:15
  */
-@RestControllerAdvice
-@ControllerAdvice
-public class CommonBodyAdvice implements ResponseBodyAdvice<Object> {
+@RestControllerAdvice(basePackages = {GlobalConstants.BASE_PACKAGE})
+@ControllerAdvice(basePackages = {GlobalConstants.BASE_PACKAGE})
+public class CommonResponseBodyAdvice implements ResponseBodyAdvice<Object> {
+
+    private static final Class[] ANNOTATIONS = {
+            RequestMapping.class,
+            GetMapping.class,
+            PostMapping.class,
+            DeleteMapping.class,
+            PutMapping.class
+    };
+
+    @Autowired
+    private CommonResponseBodyAdviceProperties commonResponseBodyAdviceProperties;
 
 
     /**
@@ -33,14 +48,12 @@ public class CommonBodyAdvice implements ResponseBodyAdvice<Object> {
      */
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        // 当返回值已经是ResponseData了，就不在重复处理了
-        // FIXME 根据实际项目中情况可能这里还需要增加判断
-        if (returnType.getMethod() != null && returnType.getMethod().getReturnType() != null
-                && (ResponseData.class.equals(returnType.getMethod().getReturnType())
-                || BasicErrorController.class.equals(returnType.getMethod().getDeclaringClass()))) {
+        List<String> ignoreReturnType = commonResponseBodyAdviceProperties.getIgnoreReturnType();
+        if (ignoreReturnType != null && ignoreReturnType.contains(returnType.getGenericParameterType().getTypeName())) {
             return false;
         }
-        return true;
+        AnnotatedElement element = returnType.getAnnotatedElement();
+        return Arrays.stream(ANNOTATIONS).anyMatch(annotation -> annotation.isAnnotation() && element.isAnnotationPresent(annotation));
     }
 
     @Override

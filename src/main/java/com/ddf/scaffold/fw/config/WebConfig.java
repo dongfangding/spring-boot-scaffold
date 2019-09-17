@@ -1,6 +1,6 @@
 package com.ddf.scaffold.fw.config;
 
-import com.ddf.scaffold.fw.interceptor.LoginInterceptor;
+import com.ddf.scaffold.fw.constant.GlobalConstants;
 import com.ddf.scaffold.fw.interceptor.RequestContextInterceptor;
 import com.ddf.scaffold.fw.jpa.JpaBaseDaoImpl;
 import com.ddf.scaffold.fw.resolver.QueryParamArgumentResolver;
@@ -30,7 +30,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * @author DDf on 2018/12/8
+ * @author dongfang.ding on 2018/12/8
  * 框架核心配置类
  *
  * 主要这里一定要实现{@link WebMvcConfigurer}，该接口已经提供了默认实现，而且{@link @EnableSpringDataWebSupport}
@@ -40,21 +40,19 @@ import java.util.concurrent.ThreadFactory;
  */
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(value = {"com.ddf"},
+@EnableJpaRepositories(value = {GlobalConstants.BASE_PACKAGE},
 		repositoryBaseClass = JpaBaseDaoImpl.class)
 @EnableJpaAuditing
 @EnableSpringDataWebSupport
 @EnableAspectJAutoProxy
 @EnableAsync
 @EnableScheduling
-@ComponentScan("com.ddf.scaffold")
-@EntityScan("com.ddf.scaffold.fw.entity")
+@ComponentScan(GlobalConstants.BASE_PACKAGE)
+@EntityScan(basePackages = GlobalConstants.BASE_PACKAGE)
 @EnableCaching
 public class WebConfig implements WebMvcConfigurer {
 	@Autowired
 	private RequestContextInterceptor requestContextInterceptor;
-	@Autowired
-	private LoginInterceptor loginInterceptor;
 	@Autowired
 	private QueryParamArgumentResolver queryParamArgumentResolver;
 
@@ -84,7 +82,6 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(requestContextInterceptor).addPathPatterns("/**");
-		registry.addInterceptor(loginInterceptor).addPathPatterns("/**");
 	}
 
 	/**

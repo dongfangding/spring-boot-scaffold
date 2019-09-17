@@ -3,7 +3,7 @@ package com.ddf.scaffold.logic.repository;
 import com.ddf.scaffold.fw.exception.CNMessage;
 import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
 import com.ddf.scaffold.fw.jpa.JpaBaseDao;
-import com.ddf.scaffold.logic.model.entity.User;
+import com.ddf.scaffold.logic.model.entity.BootUser;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author DDf on 2018/12/1
+ * @author dongfang.ding on 2018/12/1
  */
 @Repository
 @Transactional(readOnly = true)
-public interface UserRepository extends JpaBaseDao<User, Long> {
+public interface UserRepository extends JpaBaseDao<BootUser, Long> {
 
 	/**
 	 * 根据用户名和密码查询用户
@@ -25,15 +25,7 @@ public interface UserRepository extends JpaBaseDao<User, Long> {
 	 * @param password 密码
 	 * @return
 	 */
-	User getUserByUserNameAndPassword(String userName, String password);
-
-	/**
-	 * 根据用户名或邮箱查询用户是否存在
-	 * @param userName 用户名
-	 * @param email 邮箱
-	 * @return
-	 */
-	User getUserByUserNameOrEmail(String userName, String email);
+	BootUser getUserByUserNameAndPassword(String userName, String password);
 
 	/**
 	 * 根据登录用户名查找用户
@@ -41,13 +33,13 @@ public interface UserRepository extends JpaBaseDao<User, Long> {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	default User getUserByLoginName(@NotNull String loginName) {
+	default BootUser getUserByLoginName(@NotNull String loginName) {
 		Map<String, Object> propertiesMap = new HashMap<>(2);
 		propertiesMap.put("loginName", loginName);
-		List<User> userList = findByProperties(propertiesMap);
-		if (userList != null && userList.size() > 0) {
-			if (userList.size() == 1) {
-				return userList.get(0);
+		List<BootUser> bootUserList = findByProperties(propertiesMap);
+		if (bootUserList != null && bootUserList.size() > 0) {
+			if (bootUserList.size() == 1) {
+				return bootUserList.get(0);
 			}
 			throw new GlobalCustomizeException(CNMessage.USER_LOGIN_NAME_REPEAT, loginName);
 		}

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor;
+import com.ddf.scaffold.fw.constant.GlobalConstants;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,7 +77,7 @@ import java.util.List;
  * @date 2019/5/22 17:14
  */
 @Configuration
-@MapperScan(basePackages = {"com.ddf.scaffold.fw.tcp.mapper", "com.ddf.scaffold.logic.mapper"})
+@MapperScan(basePackages = {GlobalConstants.FW_TCP_MAPPER_SCAN, GlobalConstants.LOGIC_MAPPER_SCAN})
 public class MyBatisConfig {
 
 
@@ -124,7 +125,7 @@ public class MyBatisConfig {
     @Profile({"default", "dev", "test"})
     public PerformanceInterceptor performanceInterceptor() {
         PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
-        performanceInterceptor.setMaxTime(200);
+        performanceInterceptor.setMaxTime(500);
         performanceInterceptor.setFormat(true);
         return performanceInterceptor;
     }

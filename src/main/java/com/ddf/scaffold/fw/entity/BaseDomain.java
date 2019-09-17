@@ -19,7 +19,7 @@ import java.util.Date;
  * &#064;EntityListeners(AuditingEntityListener.class) 提供对{@code &#064;CreatedDate, &#064;LastModifiedDate}。等注解的支持，
  *      该功能需要依赖{@code spring-aspects}
  * &#064;CreatedBy与&#064;LastModifiedBy的支持请参见 {@link AuditorAwareImpl}
- * @author DDf on 2018/9/29
+ * @author dongfang.ding on 2018/9/29
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)

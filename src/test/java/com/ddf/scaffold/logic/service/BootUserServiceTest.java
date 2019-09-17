@@ -1,7 +1,8 @@
 package com.ddf.scaffold.logic.service;
 
 import com.ddf.scaffold.ApplicationTest;
-import com.ddf.scaffold.logic.model.entity.User;
+import com.ddf.scaffold.logic.model.bo.UserRegistryBO;
+import com.ddf.scaffold.logic.model.entity.BootUser;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -11,9 +12,9 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * @author DDf on 2019/4/17
+ * @author dongfang.ding on 2019/4/17
  */
-public class UserServiceTest extends ApplicationTest {
+public class BootUserServiceTest extends ApplicationTest {
 	@Autowired
 	private UserService userService;
 
@@ -22,13 +23,13 @@ public class UserServiceTest extends ApplicationTest {
 	 */
 	@Test
 	public void testRegistry() {
-		User user = new User();
-		user.setUserName("testRegistry" + UUID.randomUUID().toString().substring(8));
-		user.setPassword("123456");
-		user.setEmail("testRegistry@qq.com" + UUID.randomUUID().toString().substring(8));
-		user.setBirthday(new Date());
-		User newUser = userService.registry(user);
-		Assert.notNull(newUser, "注册成功");
+		UserRegistryBO UserRegistryBo = new UserRegistryBO();
+		UserRegistryBo.setUserName("testRegistry" + UUID.randomUUID().toString().substring(8));
+		UserRegistryBo.setPassword("123456");
+		UserRegistryBo.setEmail("testRegistry@qq.com" + UUID.randomUUID().toString().substring(8));
+		UserRegistryBo.setBirthday(new Date());
+		BootUser newBootUser = userService.registry(UserRegistryBo);
+		Assert.notNull(newBootUser, "注册成功");
 	}
 
 	@Test

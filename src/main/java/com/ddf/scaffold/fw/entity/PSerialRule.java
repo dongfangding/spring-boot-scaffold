@@ -16,7 +16,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
-public class PSerialRule extends CompanyDomain implements Serializable {
+public class PSerialRule extends OrgDomain implements Serializable {
 	private static final long serialVersionUID = 6275470964335796126L;
 	/** 业务号规则代码 */
 	@Column(name = "SERU_CODE")

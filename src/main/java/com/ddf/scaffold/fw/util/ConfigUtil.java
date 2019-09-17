@@ -1,6 +1,6 @@
 package com.ddf.scaffold.fw.util;
 
-import com.ddf.scaffold.fw.security.UserToken;
+import com.ddf.scaffold.fw.security.SecurityUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -11,7 +11,7 @@ import javax.servlet.ServletContext;
 import java.io.File;
 
 @Component
-@ConfigurationProperties(prefix = "custom.config-util")
+@ConfigurationProperties(prefix = "customs.config-util")
 public class ConfigUtil implements ServletContextAware {
 
 	private String contextPath;
@@ -56,12 +56,12 @@ public class ConfigUtil implements ServletContextAware {
 	}
 
 	public String getTempUrl() {
-		return getDataUrl() + ConstUtil.DIR_SEP + UserToken.getCompCode() + ConstUtil.DIR_SEP + tempDir;
+		return getDataUrl() + ConstUtil.DIR_SEP + SecurityUtils.getUserOrgCode() + ConstUtil.DIR_SEP + tempDir;
 	}
 	
 	
 	public String getTempDir() {
-		return getDataRealDir() + File.separator + UserToken.getCompCode() + File.separator + tempDir;
+		return getDataRealDir() + File.separator + SecurityUtils.getUserOrgCode() + File.separator + tempDir;
 	}
 
 	public void setTempDir(String tempDir) {
@@ -69,11 +69,11 @@ public class ConfigUtil implements ServletContextAware {
 	}
 
 	public String getRealTempDir() {
-		return getRealDataDir() + File.separator + File.separator + UserToken.getCompCode() + File.separator + tempDir;
+		return getRealDataDir() + File.separator + File.separator + SecurityUtils.getUserOrgCode() + File.separator + tempDir;
 	}
 	
 	public String getTemplateDir() {
-		return getDataUrl() + File.separator + UserToken.getCompCode() + File.separator + templateDir;
+		return getDataUrl() + File.separator + SecurityUtils.getUserOrgCode() + File.separator + templateDir;
 	}
 
 	public void setTemplateDir(String templateDir) {
@@ -81,11 +81,11 @@ public class ConfigUtil implements ServletContextAware {
 	}
 	
 	public String getRealTemplateDir() {
-		return getDataRealDir() + File.separator + UserToken.getCompCode() + File.separator + templateDir;
+		return getDataRealDir() + File.separator + SecurityUtils.getUserOrgCode() + File.separator + templateDir;
 	}
 
 	public String getAttachDir() {
-		return getDataUrl() + File.separator + UserToken.getCompCode() + File.separator + attachDir;
+		return getDataUrl() + File.separator + SecurityUtils.getUserOrgCode() + File.separator + attachDir;
 	}
 
 	public void setAttachDir(String attachDir) {
@@ -93,6 +93,6 @@ public class ConfigUtil implements ServletContextAware {
 	}
 	
 	public String getRealAttachDir() {
-		return getDataRealDir() + File.separator + UserToken.getCompCode() + File.separator + attachDir;
+		return getDataRealDir() + File.separator + SecurityUtils.getUserOrgCode() + File.separator + attachDir;
 	}
 }

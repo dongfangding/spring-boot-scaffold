@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 /**
- * @author DDf on 2018/12/1
+ * @author dongfang.ding on 2018/12/1
  */
 @SpringBootApplication
 @EntityScan("com.ddf.scaffold.logic.model.entity")

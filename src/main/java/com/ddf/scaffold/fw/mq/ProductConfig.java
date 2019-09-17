@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author DDf on 2019/4/21
+ * @author dongfang.ding on 2019/4/21
  */
 @Configuration
 public class ProductConfig implements RabbitTemplate.ConfirmCallback {

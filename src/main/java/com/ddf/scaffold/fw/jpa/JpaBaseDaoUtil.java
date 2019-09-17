@@ -4,7 +4,7 @@ import com.ddf.scaffold.fw.entity.BaseDomain;
 import com.ddf.scaffold.fw.entity.QueryParam;
 import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
 import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
-import com.ddf.scaffold.fw.security.UserToken;
+import com.ddf.scaffold.fw.security.SecurityUtils;
 import com.ddf.scaffold.fw.util.MethodUtil;
 import org.springframework.lang.Nullable;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author DDf on 2019/2/28
+ * @author dongfang.ding on 2019/2/28
  *
  * 用于快速拼接查询条件的辅助类
  */
@@ -36,7 +36,7 @@ public class JpaBaseDaoUtil {
      */
     public static void addCompCodeIfNotPlatformUser(@NotNull List<QueryParam> queryParams) {
         if (!isPlatformUser()) {
-            queryParams.add(new QueryParam<>("compCode", UserToken.getCompCode()));
+            queryParams.add(new QueryParam<>("orgCode", SecurityUtils.getUserOrgCode()));
         }
     }
 
@@ -45,7 +45,7 @@ public class JpaBaseDaoUtil {
      * @param queryParams 查询对象列表
      */
     public static void addCompCode(@NotNull List<QueryParam> queryParams) {
-        queryParams.add(new QueryParam<>("compCode", UserToken.getCompCode()));
+        queryParams.add(new QueryParam<>("orgCode", SecurityUtils.getUserOrgCode()));
     }
 
     /**
@@ -89,7 +89,7 @@ public class JpaBaseDaoUtil {
      * <p>如果不使用该方法，那么去重的写法如下：</p>
      * <pre class="code">
      *      List&#60;QueryParam&#62; queryParams = new ArrayList&#60;&#62;();
-     *      queryParams.add(new QueryParam&#60;&#62;("compCode", UserToken.getCompCode()));
+     *      queryParams.add(new QueryParam&#60;&#62;("orgCode", UserToken.getOrgCode()));
      *      queryParams.add(new QueryParam&#60;&#62;("partyType", party.getPartyType()));
      *      if (ConstUtil.isNotNull(party.getPartyName())) {
      *          queryParams.add(new QueryParam&#60;&#62;("partyName", party.getPartyName()));
@@ -102,7 +102,7 @@ public class JpaBaseDaoUtil {
      * </pre>
      * 以上代码等同于以下
      * <pre class="code">
-     *     List&#60;String&#62; notGroupList = Arrays.asList("compCode", "partyType");
+     *     List&#60;String&#62; notGroupList = Arrays.asList("orgCode", "partyType");
      *     List&#60;String&#62; groupList = Arrays.asList("partyName", "partyContact");
      *     JpaBaseDaoUtil.checkRepeat(partyRepository, party, notGroupList, groupList);
      * </pre>

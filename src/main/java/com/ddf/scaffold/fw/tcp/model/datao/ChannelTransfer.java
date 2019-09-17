@@ -18,7 +18,7 @@ import lombok.ToString;
  *
  * @author {@link EntityGenerateUtil} Tue Jul 23 15:37:11 CST 2019
  */
-@TableName(value = "log_channel_transfer")
+@TableName(value = "boot_log_channel_transfer")
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor

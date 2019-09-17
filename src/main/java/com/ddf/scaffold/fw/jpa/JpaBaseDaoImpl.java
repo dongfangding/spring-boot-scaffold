@@ -1,11 +1,11 @@
 package com.ddf.scaffold.fw.jpa;
 
 import com.ddf.scaffold.fw.entity.BaseDomain;
-import com.ddf.scaffold.fw.entity.CompanyDomain;
+import com.ddf.scaffold.fw.entity.OrgDomain;
 import com.ddf.scaffold.fw.entity.QueryParam;
 import com.ddf.scaffold.fw.exception.GlobalCustomizeException;
 import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
-import com.ddf.scaffold.fw.security.UserToken;
+import com.ddf.scaffold.fw.security.SecurityUtils;
 import com.ddf.scaffold.fw.session.RequestContext;
 import com.ddf.scaffold.fw.util.ConstUtil;
 import org.hibernate.StaleObjectStateException;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 /**
  * TODO 多表连接
- * @author DDf on 2019/1/24
+ * @author dongfang.ding on 2019/1/24
  */
 public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository<T, S> implements JpaBaseDao<T, S> {
 
@@ -517,16 +517,7 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
      * @return
      */
     private String getUid() {
-//        String uid;
-//        if (localSessionContext == null || localSessionContext.get().getUid() == null) {
-//             uid = ConstUtil.ANONYMOUS_NAME;
-//        } else if (localSessionContext.get().getUid() == null) {
-//            throw new GlobalCustomizeException(GlobalExceptionEnum.UID_NOT_EXIST);
-//        } else {
-//            uid = localSessionContext.get().getUid();
-//        }
-//        return uid;
-        return UserToken.getUserName();
+        return SecurityUtils.getUsername();
     }
 
 
@@ -795,9 +786,9 @@ public class JpaBaseDaoImpl<T extends BaseDomain, S> extends SimpleJpaRepository
                     fieldMap.put(field.getName(), fieldExtend);
                 }
             }
-            // CompanyDomain
-            if (CompanyDomain.class.isAssignableFrom(clazz)) {
-                fields = CompanyDomain.class.getDeclaredFields();
+            // OrgDomain
+            if (OrgDomain.class.isAssignableFrom(clazz)) {
+                fields = OrgDomain.class.getDeclaredFields();
                 for (Field field : fields) {
                     FieldExtend fieldExtend = new FieldExtend(field, field.getAnnotation(Column.class));
                     fieldMap.put(field.getName(), fieldExtend);

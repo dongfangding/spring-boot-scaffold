@@ -3,7 +3,7 @@ package com.ddf.scaffold.fw.exception;
 import org.springframework.core.NestedRuntimeException;
 
 /**
- * @author DDf on 2018/8/18
+ * @author dongfang.ding on 2018/8/18
  * 自定义异常类
  */
 public class GlobalCustomizeException extends NestedRuntimeException {

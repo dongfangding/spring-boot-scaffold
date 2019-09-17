@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
  *
  * 存放一些全局的自定义属性，根据需要决定是否可配置
  *
- * @author DDf on 2019/1/25
+ * @author dongfang.ding on 2019/1/25
  */
 @Component
-@ConfigurationProperties(prefix = "custom.global-config")
+@ConfigurationProperties(prefix = "customs.global-config")
 @Getter
 @Setter
 public class GlobalConfig {

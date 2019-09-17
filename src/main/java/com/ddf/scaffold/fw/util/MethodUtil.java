@@ -194,7 +194,7 @@ public class MethodUtil {
 	
 	/**
 	 * 根据给定的字符数组数据在两个对象之间拷贝数据
-	 * @author ddf on 2017年1月20日
+	 * @author dongfang.ding on 2017年1月20日
 	 * @param source 源对象
 	 * @param taget 目标对象
 	 * @param copyProperties 指定需要拷贝的字段数组
@@ -224,7 +224,7 @@ public class MethodUtil {
 	
 	/**
 	 * 根据给定的字符数据在两个对象之间拷贝数据
-	 * @author ddf on 2017年1月20日
+	 * @author dongfang.ding on 2017年1月20日
 	 * @param source 源对象
 	 * @param taget 目标对象
 	 * @param copyProperties 指定需要拷贝的字段

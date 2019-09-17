@@ -18,8 +18,6 @@ import java.text.SimpleDateFormat;
 
 /**
  * Json工具类
- * @author honglin.jiang
- * @create 2019年07月25日
  */
 public final class JsonUtil {
 
@@ -29,8 +27,7 @@ public final class JsonUtil {
 
     /**
      * 对象转Json
-     * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param obj
      * @return
      */
@@ -50,6 +47,7 @@ public final class JsonUtil {
 
     /**
      * 将对象序列化成json字符串
+     *
      * @param obj
      * @return
      */
@@ -63,8 +61,7 @@ public final class JsonUtil {
 
     /**
      * Json转对象
-     * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param json
      * @param type
      * @return
@@ -75,8 +72,7 @@ public final class JsonUtil {
 
     /**
      * Json转对象
-     * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param json
      * @param paramType
      * @param types
@@ -88,8 +84,7 @@ public final class JsonUtil {
 
     /**
      * Json转对象
-     * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param json
      * @param type
      * @return
@@ -100,8 +95,7 @@ public final class JsonUtil {
 
     /**
      * Json转对象
-     * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param json
      * @param type
      * @return
@@ -116,8 +110,7 @@ public final class JsonUtil {
 
     /**
      * 对象转字节
-     * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param obj
      * @return
      */
@@ -131,8 +124,7 @@ public final class JsonUtil {
 
     /**
      * 字节转对象
-     * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param bytes
      * @param type
      * @return
@@ -147,8 +139,7 @@ public final class JsonUtil {
 
     /**
      * 根据策略生成Json
-     * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param obj
      * @param strategy
      * @return
@@ -172,8 +163,7 @@ public final class JsonUtil {
 
     /**
      * 初始化ObjectMapperW
-     * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param objectMapper
      * @return
      */
@@ -182,16 +172,15 @@ public final class JsonUtil {
         objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        objectMapper.setSerializationInclusion(Include.NON_EMPTY);
         return objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     }
 
     /**
      * 返回当前实例
-     * @since 2019年07月25日
-     * @author honglin.jiang
+     *
      * @param
      * @return
+     * @since 2019年07月25日
      */
     public static ObjectMapper getInstance() {
         return objectMapper;
@@ -199,9 +188,8 @@ public final class JsonUtil {
 
     /**
      * 返回新实例,同时设置默认值
-     * @since 2019年07月25日
-     * @author honglin.jiang
-     * @param  
+     *
+     * @param
      * @return
      */
     public static ObjectMapper newInstance() {

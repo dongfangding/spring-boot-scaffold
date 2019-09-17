@@ -18,7 +18,7 @@ import java.util.Map;
  *
  * 邮件发送工具类,邮件发送全部采取异步处理，暂时不考虑由使用人员决定是否异步，后续有需求，会在修改；
  *
- * @author DDf on 2018/5/31
+ * @author dongfang.ding on 2018/5/31
  */
 @Component
 public class MailUtil {

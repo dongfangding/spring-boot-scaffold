@@ -5,7 +5,7 @@ import lombok.Setter;
 
 /**
  * @see LogAspectRegistrar
- * @author DDf on 2018/11/7
+ * @author dongfang.ding on 2018/11/7
  */
 @Getter
 @Setter

@@ -18,7 +18,6 @@ public class CollectionUtil {
     /**
      * 判断[1,N]集合是否为空
      * @since 2019年07月24日
-     * @author honglin.jiang
      * @param items
      * @return
      */
@@ -41,7 +40,6 @@ public class CollectionUtil {
     /**
      * 判断[1,N]集合是否不为空
      * @since 2019年07月24日
-     * @author honglin.jiang
      * @param items
      * @return
      */
@@ -52,7 +50,7 @@ public class CollectionUtil {
     /**
      * 根据Name查找属性
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param items
      * @param name
      * @return
@@ -72,7 +70,7 @@ public class CollectionUtil {
     /**
      * 根据Name查找属性,并转为cls类型
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param items
      * @param name
      * @param cls
@@ -96,7 +94,7 @@ public class CollectionUtil {
     /**
      * 根据Name查找属性,并转为cls类型
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param items
      * @param names
      * @param cls
@@ -118,7 +116,7 @@ public class CollectionUtil {
     /**
      * 根据Name查找属性
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param items
      * @param names
      * @return
@@ -141,7 +139,7 @@ public class CollectionUtil {
     /**
      * 根据Name查找属性:并转为cls类型
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param items
      * @param names
      * @param cls
@@ -161,7 +159,7 @@ public class CollectionUtil {
     /**
      * 集合切分
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param items
      * @param size
      * @return
@@ -173,7 +171,7 @@ public class CollectionUtil {
     /**
      * 查找元素集合
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param items
      * @param mapper
      * @return
@@ -195,7 +193,7 @@ public class CollectionUtil {
     /**
      * 查找元素集合
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param items
      * @param mappers
      * @return
@@ -219,7 +217,7 @@ public class CollectionUtil {
     /**
      * 集合转Map
      * @since 2019年07月24日
-     * @author honglin.jiang
+     *
      * @param items
      * @param key
      * @param val

@@ -9,7 +9,7 @@ import javax.persistence.Column;
 import java.lang.reflect.Field;
 
 /**
- * @author DDf on 2019/1/24
+ * @author dongfang.ding on 2019/1/24
  */
 @Getter
 @Setter

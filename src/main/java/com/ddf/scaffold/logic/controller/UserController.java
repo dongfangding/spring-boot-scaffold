@@ -2,8 +2,8 @@ package com.ddf.scaffold.logic.controller;
 
 import com.ddf.scaffold.fw.entity.QueryParam;
 import com.ddf.scaffold.fw.session.RequestContext;
-import com.ddf.scaffold.fw.session.SessionContext;
-import com.ddf.scaffold.logic.model.entity.User;
+import com.ddf.scaffold.logic.model.bo.UserRegistryBO;
+import com.ddf.scaffold.logic.model.entity.BootUser;
 import com.ddf.scaffold.logic.repository.UserRepository;
 import com.ddf.scaffold.logic.service.UserService;
 import io.swagger.annotations.Api;
@@ -18,7 +18,7 @@ import javax.mail.MessagingException;
 import java.util.List;
 
 /**
- * @author DDf on 2018/12/2
+ * @author dongfang.ding on 2018/12/2
  */
 @RestController
 @RequestMapping("/user")
@@ -31,19 +31,16 @@ public class UserController {
 	private UserRepository userRepository;
 	@Autowired
 	private RequestContext requestContext;
-	@Autowired
-	private SessionContext<User> sessionContext;
-
 
 	/**
 	 * 注册用户
-	 * @param user 用户实体
+	 * @param userRegistryBo 用户实体
 	 * @return
 	 */
 	@PostMapping("registry")
 	@ApiOperation("注册用户")
-	public User registry(@RequestBody User user) {
-		return userService.registry(user);
+	public BootUser registry(@RequestBody UserRegistryBO userRegistryBo) {
+		return userService.registry(userRegistryBo);
 	}
 
 	@GetMapping("validateEmail")
@@ -61,8 +58,8 @@ public class UserController {
 	 */
 	@PostMapping("login")
 	@ApiOperation("用户登录")
-	public User login(@RequestParam("userName") @ApiParam(value = "登录名") String userName,
-					  @RequestParam @ApiParam(value = "密码") String password) {
+	public String login(@RequestParam("userName") @ApiParam(value = "登录名") String userName,
+                          @RequestParam @ApiParam(value = "密码") String password) {
 		return userService.login(userName, password);
 	}
 
@@ -73,7 +70,7 @@ public class UserController {
      */
 	@GetMapping("user/{id}")
 	@ApiOperation("根据主键查询用户")
-    public User uniqueUser(@PathVariable("id") Long id) {
+    public BootUser uniqueUser(@PathVariable("id") Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
@@ -85,7 +82,7 @@ public class UserController {
 	 */
 	@GetMapping("/users")
 	@ApiOperation("分页查询用户列表")
-	public Page<User> users(Pageable pageable, List<QueryParam> queryParams) {
+	public Page<BootUser> users(Pageable pageable, List<QueryParam> queryParams) {
 		return userRepository.pageByQueryParams(queryParams, pageable);
 	}
 

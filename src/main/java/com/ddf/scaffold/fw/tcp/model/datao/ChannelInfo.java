@@ -18,7 +18,7 @@ import java.util.Date;
  */
 @Data
 @ToString(callSuper = true)
-@TableName(value = "base_channel_info")
+@TableName(value = "boot_base_channel_info")
 @ApiModel
 public class ChannelInfo extends BaseDomain {
     @ApiModelProperty("设备id")

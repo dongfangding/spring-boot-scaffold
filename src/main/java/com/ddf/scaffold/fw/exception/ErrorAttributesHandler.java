@@ -17,7 +17,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * @author DDf on 2019/1/2
+ * @author dongfang.ding on 2019/1/2
  * 处理全局异常，支持异常类占位符解析和国际化
  */
 @Component

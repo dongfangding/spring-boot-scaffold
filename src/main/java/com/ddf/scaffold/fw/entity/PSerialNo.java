@@ -14,7 +14,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
-public class PSerialNo extends CompanyDomain implements Serializable {
+public class PSerialNo extends OrgDomain implements Serializable {
 	private static final long serialVersionUID = 3603749308663591961L;
 	@Column(name = "SENO_CURRENT_NO")
 	private Long senoCurrentNo;

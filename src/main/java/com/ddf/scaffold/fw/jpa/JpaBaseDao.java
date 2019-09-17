@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * TODO 多表连接
- * @author DDf on 2019/1/24
+ * @author dongfang.ding on 2019/1/24
  */
 @NoRepositoryBean
 public interface JpaBaseDao<T extends BaseDomain, S> extends JpaRepository<T, S> {
