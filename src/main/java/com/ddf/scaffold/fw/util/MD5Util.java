@@ -35,7 +35,7 @@ public class MD5Util {
      * @return 16进制字串
      */
     public static String byteArrayToHexString(byte[] b) {
-        StringBuffer resultSb = new StringBuffer();
+        StringBuilder resultSb = new StringBuilder();
         for (int i = 0; i < b.length; i++) {
             resultSb.append(byteToHexString(b[i]));
         }

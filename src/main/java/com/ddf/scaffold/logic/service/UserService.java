@@ -1,6 +1,7 @@
 package com.ddf.scaffold.logic.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ddf.scaffold.logic.model.VO.BootUserVo;
 import com.ddf.scaffold.logic.model.bo.UserRegistryBO;
 import com.ddf.scaffold.logic.model.entity.BootUser;
 
@@ -24,11 +25,12 @@ public interface UserService extends IService<BootUser> {
 	 * @param userRegistryBo 新增用户对象
 	 * @return
 	 */
-	BootUser registry(UserRegistryBO userRegistryBo);
+	BootUserVo registry(UserRegistryBO userRegistryBo);
 
 	/**
 	 * 验证注册用户邮箱
 	 * @param email
+	 * @throws MessagingException
 	 */
 	void validateEmail(String email) throws MessagingException;
 

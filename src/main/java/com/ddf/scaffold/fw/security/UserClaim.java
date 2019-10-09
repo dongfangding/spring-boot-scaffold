@@ -54,7 +54,7 @@ public class UserClaim implements Serializable, UserDetails {
     /**
      * 用户名
      */
-    private String userName;
+    private String username;
     /**
      * 用户登录的授信设备唯一标识符
      * 每一次签发token 都必须包含当前登录的设备标识，需要维护每个用户已签发的设备标识,如果
@@ -88,14 +88,14 @@ public class UserClaim implements Serializable, UserDetails {
     private String orgCode;
 
 
-    public UserClaim(Long userId, String userName) {
+    public UserClaim(Long userId, String username) {
         this.userId = userId;
-        this.userName = userName;
+        this.username = username;
     }
 
-    public UserClaim(Long userId, String userName, String credit, long lastModifyPasswordTime, boolean enable, String orgCode) {
+    public UserClaim(Long userId, String username, String credit, long lastModifyPasswordTime, boolean enable, String orgCode) {
         this.userId = userId;
-        this.userName = userName;
+        this.username = username;
         this.credit = credit;
         this.lastModifyPasswordTime = lastModifyPasswordTime;
         this.enable = enable;
@@ -145,7 +145,7 @@ public class UserClaim implements Serializable, UserDetails {
         Map<String, Object> claimMap = new HashMap<>();
         claimMap.put(CLAIM_USER_ID, this.getUserId());
         try {
-            claimMap.put(CLAIM_USER_NAME, URLEncoder.encode(this.userName, HEADER_CHARSET));
+            claimMap.put(CLAIM_USER_NAME, URLEncoder.encode(this.username, HEADER_CHARSET));
         } catch (UnsupportedEncodingException e) {
             throw new GlobalCustomizeException("不支持的编码");
         }
@@ -179,7 +179,7 @@ public class UserClaim implements Serializable, UserDetails {
      */
     @Override
     public String getUsername() {
-        return userName;
+        return username;
     }
 
     /**

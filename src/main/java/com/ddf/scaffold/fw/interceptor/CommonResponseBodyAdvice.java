@@ -1,10 +1,10 @@
 package com.ddf.scaffold.fw.interceptor;
 
 import com.ddf.scaffold.fw.constant.GlobalConstants;
-import com.ddf.scaffold.fw.exception.ErrorAttributesHandler;
 import com.ddf.scaffold.fw.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
@@ -24,6 +24,7 @@ import java.util.List;
  */
 @RestControllerAdvice(basePackages = {GlobalConstants.BASE_PACKAGE})
 @ControllerAdvice(basePackages = {GlobalConstants.BASE_PACKAGE})
+@Order
 public class CommonResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
     private static final Class[] ANNOTATIONS = {
@@ -37,10 +38,7 @@ public class CommonResponseBodyAdvice implements ResponseBodyAdvice<Object> {
     @Autowired
     private CommonResponseBodyAdviceProperties commonResponseBodyAdviceProperties;
 
-
     /**
-     * 如果出现了异常，先经过{@link ErrorAttributesHandler}处理之后依然会将请求拦截到这里，但是异常本身有自己的很多属性，与正常的ResponseData
-     * 有诸多不通过，不需要data但却需要更多的错误消息，所以是将两个地方统一还是说异常和正常不太一样，看自己决定吧。我这边做了分开
      *
      * @param returnType
      * @param converterType
@@ -59,6 +57,7 @@ public class CommonResponseBodyAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public ResponseData<Object> beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
             Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        return ResponseData.success(body);
+
+        return ResponseData.success(body, request.getURI().getPath());
     }
 }

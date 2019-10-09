@@ -83,18 +83,18 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
         UserClaim userClaim = JwtUtil.getUserClaim(claimsJws);
         Preconditions.checkNotNull(userClaim, "解析用户为空!");
-        Preconditions.checkArgument(StringUtils.isAnyBlank(userClaim.getUsername(), userClaim.getCredit(),
+        Preconditions.checkArgument(!StringUtils.isAnyBlank(userClaim.getUsername(), userClaim.getCredit(),
                 userClaim.getLastModifyPasswordTime().toString()), "用户关键信息缺失！");
 
         // FIXME 是否需要判断
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             UserClaim bootUser = (UserClaim) userDetailsService.loadUserByUsername(userClaim.getUsername());
             // 也可以维护一个列表
-            if (Objects.equals(userClaim.getCredit(), WebUtil.getHost())) {
+            if (!Objects.equals(userClaim.getCredit(), WebUtil.getHost())) {
                 response.sendError(HttpStatus.UNAUTHORIZED.value(), "token无效！");
                 return;
             }
-            if (Objects.equals(userClaim.getLastModifyPasswordTime(), bootUser.getLastModifyPasswordTime())) {
+            if (!Objects.equals(userClaim.getLastModifyPasswordTime(), bootUser.getLastModifyPasswordTime())) {
                 response.sendError(HttpStatus.UNAUTHORIZED.value(), "密码已经修改，请重新登录！");
                 return;
             }

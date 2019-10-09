@@ -13,6 +13,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -55,8 +56,15 @@ public class ErrorAttributesHandler extends DefaultErrorAttributes {
 		exception.setMessage(messageSource.getMessage(exception.getCode(), exception.getParams(),
 				exception.getCode(), locale));
 
-		errorAttributes.put("code", exception.getCode());
-		errorAttributes.put("message", exception.getMessage());
-		return errorAttributes;
+		// 为了定义自己的字段返回顺序，所以重新写了一个map
+		Map<String, Object> errorOverrideMap = new LinkedHashMap<>();
+		errorOverrideMap.put("path", errorAttributes.get("path"));
+		errorOverrideMap.put("status", errorAttributes.get("status"));
+		errorOverrideMap.put("code", exception.getCode());
+		errorOverrideMap.put("message", exception.getMessage());
+		errorOverrideMap.put("timestamp", System.currentTimeMillis());
+		errorOverrideMap.put("error", errorAttributes.get("error"));
+		errorOverrideMap.put("trace", errorAttributes.get("trace"));
+		return errorOverrideMap;
 	}
 }

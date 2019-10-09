@@ -1,8 +1,8 @@
 package com.ddf.scaffold.logic.service;
 
 import com.ddf.scaffold.ApplicationTest;
+import com.ddf.scaffold.logic.model.VO.BootUserVo;
 import com.ddf.scaffold.logic.model.bo.UserRegistryBO;
-import com.ddf.scaffold.logic.model.entity.BootUser;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -28,7 +28,7 @@ public class BootUserServiceTest extends ApplicationTest {
 		UserRegistryBo.setPassword("123456");
 		UserRegistryBo.setEmail("testRegistry@qq.com" + UUID.randomUUID().toString().substring(8));
 		UserRegistryBo.setBirthday(new Date());
-		BootUser newBootUser = userService.registry(UserRegistryBo);
+		BootUserVo newBootUser = userService.registry(UserRegistryBo);
 		Assert.notNull(newBootUser, "注册成功");
 	}
 

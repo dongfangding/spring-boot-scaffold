@@ -66,7 +66,7 @@ public class WebUtil {
             try {
                 isDefault = false;
                 userName = URLDecoder.decode(curRequest.getHeader(UserClaim.CLAIM_USER_NAME), "UTF-8");
-                newUserClaim.setUserName(userName);
+                newUserClaim.setUsername(userName);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }

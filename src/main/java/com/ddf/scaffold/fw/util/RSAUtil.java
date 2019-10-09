@@ -1,11 +1,10 @@
 package com.ddf.scaffold.fw.util;
 
 
+import org.springframework.core.io.ClassPathResource;
+
 import javax.crypto.Cipher;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -59,13 +58,13 @@ public class RSAUtil {
      */
     private static final PrivateKey CLIENT_PRIVATE_KEY;
 
-    private static final String BASE_DIR = System.getProperty("bootUser.dir") + "/src/main/resources/RSA";
+    private static final String BASE_DIR = "/RSA";
 
     static {
-        SERVER_PUBLIC_KEY = getPublicKey(readKeyByFile(BASE_DIR + "/服务端公钥2048.txt"));
-        SERVER_PRIVATE_KEY = getPrivateKey(readKeyByFile(BASE_DIR + "/服务端私钥2048.txt"));
-        CLIENT_PUBLIC_KEY = getPublicKey(readKeyByFile(BASE_DIR + "/应用公钥2048.txt"));
-        CLIENT_PRIVATE_KEY = getPrivateKey(readKeyByFile(BASE_DIR + "/应用私钥2048.txt"));
+        SERVER_PUBLIC_KEY = getPublicKey(readKeyByClassPathFile(BASE_DIR + "/服务端公钥2048.txt"));
+        SERVER_PRIVATE_KEY = getPrivateKey(readKeyByClassPathFile(BASE_DIR + "/服务端私钥2048.txt"));
+        CLIENT_PUBLIC_KEY = getPublicKey(readKeyByClassPathFile(BASE_DIR + "/应用公钥2048.txt"));
+        CLIENT_PRIVATE_KEY = getPrivateKey(readKeyByClassPathFile(BASE_DIR + "/应用私钥2048.txt"));
     }
 
     /**
@@ -84,27 +83,53 @@ public class RSAUtil {
         }
     }
 
+    public static String readKeyByFile(String keyFilePath) {
+        try {
+            return getContext(new FileReader(keyFilePath));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+
+    private static String getContext(InputStreamReader inputStreamReader) {
+        try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+            String str;
+            StringBuilder sbl = new StringBuilder();
+            while ((str = bufferedReader.readLine()) != null) {
+                if (str.contains("---")) {
+                    continue;
+                }
+                sbl.append(str);
+            }
+            return sbl.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     /**
      * 从文件中读取秘钥字符串
      *
      * @param keyFilePath
      * @return
      */
-    public static String readKeyByFile(String keyFilePath) {
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(keyFilePath))) {
-            String str;
-            StringBuilder stringBuilder = new StringBuilder();
-            while ((str = bufferedReader.readLine()) != null) {
-                if (str.contains("---")) {
-                    continue;
-                }
-                stringBuilder.append(str);
-            }
-            return new String(stringBuilder.toString().getBytes(), StandardCharsets.UTF_8);
+    public static String readKeyByClassPathFile(String keyFilePath) {
+        ClassPathResource classPathResource = new ClassPathResource(keyFilePath);
+        System.out.println("======================================================");
+        try {
+            InputStream inputStream = classPathResource.getInputStream();
+            return getContext(new InputStreamReader(inputStream));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return "";
         }
     }
+
+
+
 
     /**
      * 获取私钥

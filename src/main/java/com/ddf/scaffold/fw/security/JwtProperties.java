@@ -60,15 +60,22 @@ public class JwtProperties {
         // 当前请求地址是否需要跳过认证
         if (!ignores.isEmpty()) {
             for (String ignore : ignores) {
-                if (ignore.equals(path) || ignore.startsWith("/*") || ignore.startsWith("/**")) {
+                if (ignore.equals(path)) {
                     return true;
+                }
+                // 粗略实现ant风格匹配
+                if (ignore.contains("**")) {
+                    ignore = ignore.substring(0, ignore.indexOf("**") - 1);
+                    if (StringUtils.isNotBlank(ignore) && path.startsWith(ignore)) {
+                        return true;
+                    }
                 }
                 // 粗略实现ant风格匹配
                 if (ignore.contains("*")) {
                     ignore = ignore.substring(0, ignore.indexOf("*") - 1);
-                }
-                if (path.startsWith(ignore)) {
-                    return true;
+                    if (StringUtils.isNotBlank(ignore) && path.startsWith(ignore)) {
+                        return true;
+                    }
                 }
             }
         }

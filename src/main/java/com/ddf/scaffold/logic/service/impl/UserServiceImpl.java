@@ -8,9 +8,13 @@ import com.ddf.scaffold.fw.exception.GlobalExceptionEnum;
 import com.ddf.scaffold.fw.security.JwtProperties;
 import com.ddf.scaffold.fw.security.JwtUtil;
 import com.ddf.scaffold.fw.security.UserClaim;
-import com.ddf.scaffold.fw.util.*;
+import com.ddf.scaffold.fw.util.BeanUtil;
+import com.ddf.scaffold.fw.util.MD5Util;
+import com.ddf.scaffold.fw.util.MailUtil;
+import com.ddf.scaffold.fw.util.WebUtil;
 import com.ddf.scaffold.logic.constant.LogicGlobalConstants;
 import com.ddf.scaffold.logic.mapper.UserMapper;
+import com.ddf.scaffold.logic.model.VO.BootUserVo;
 import com.ddf.scaffold.logic.model.bo.UserRegistryBO;
 import com.ddf.scaffold.logic.model.entity.BootUser;
 import com.ddf.scaffold.logic.repository.UserRepository;
@@ -60,7 +64,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, BootUser> implement
 		}
 
 		UserClaim userClaim = new UserClaim();
-		userClaim.setUserId(bootUser.getId()).setUserName(bootUser.getUserName()).setLastModifyPasswordTime(
+		userClaim.setUserId(bootUser.getId()).setUsername(bootUser.getUserName()).setLastModifyPasswordTime(
 				// 默认注册时间
 				bootUser.getLastModifyPassword()).setCredit(WebUtil.getHost());
 		return JwtUtil.defaultJws(userClaim, jwtProperties.getExpiredMinute());
@@ -73,7 +77,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, BootUser> implement
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public BootUser registry(UserRegistryBO userRegistryBo) {
+	public BootUserVo registry(UserRegistryBO userRegistryBo) {
 		Preconditions.checkNotNull(userRegistryBo);
 		Preconditions.checkArgument(!StringUtils.isAnyBlank(userRegistryBo.getUserName(), userRegistryBo.getPassword(),
 				userRegistryBo.getEmail()), "用户名、密码、邮箱都不能为空！");
@@ -91,9 +95,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, BootUser> implement
 		if (bootUser == null) {
 			throw new GlobalCustomizeException(GlobalExceptionEnum.LOGIN_ERROR);
 		}
+		bootUser.setPassword(MD5Util.encodeSalt(bootUser.getPassword()));
 		bootUser.setLastModifyPassword(System.currentTimeMillis());
 		save(bootUser);
-		return bootUser;
+		BootUserVo bootUserVo = new BootUserVo();
+		BeanUtil.copy(bootUser, bootUserVo);
+		return bootUserVo;
 	}
 
 
@@ -108,8 +115,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, BootUser> implement
 			propertiesMap.put("email", email);
 			Long aLong = userRepository.querySize(propertiesMap, null);
 			if (aLong.intValue() > 0) {
-				// fixme 去除注释
-				// throw new GlobalCustomizeException(GlobalExceptionEnum.EMAIL_HAD_REGISTRY);
+				 throw new GlobalCustomizeException(GlobalExceptionEnum.EMAIL_HAD_REGISTERED);
 			}
 			Random random = new Random();
 			StringBuilder str = new StringBuilder();
