@@ -18,7 +18,7 @@
         <p6spy.version>3.8.2</p6spy.version>
         <swagger.version>2.9.2</swagger.version>
         <swagger-ui.version>2.9.2</swagger-ui.version>
-        <netty.version>4.1.37.Final</netty.version>
+        <netty.version>4.1.42.Final</netty.version>
         <commons-lang3.version>3.9</commons-lang3.version>
         <dozer.version>6.4.1</dozer.version>
     </properties>
